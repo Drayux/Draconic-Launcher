@@ -1,5 +1,6 @@
 package json;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import com.google.gson.JsonSyntaxException;
@@ -23,8 +24,8 @@ public class Settings {
 	//Updates all missing entries and 'saves' the object to the file
 	public static void generate() throws IOException {
 		try {
-			System.out.println( "[Draconic Launcher][Settings][Info] Loading settings from file..." );
 			settings = ParseFromJson.settings( "settings.json" );
+			System.out.println( "[Draconic Launcher][Settings][Info] Loaded settings from file..." );
 			
 		}
 		catch ( IOException | JsonSyntaxException exception) {
@@ -57,7 +58,14 @@ public class Settings {
 	
 	//Writes data of settings object (followed by this) to the settings file
 	public void write() throws IOException {
-		FileWriter settingsWriter = new FileWriter( filePath + "Settings.json" );
+		File settingsFile = new File( filePath + "settings.json" );
+		if ( !settingsFile.exists() ) {
+			//System.out.println( "settingsFile test!" );
+			settingsFile.createNewFile();
+			
+		}
+		
+		FileWriter settingsWriter = new FileWriter( settingsFile );
 		settingsWriter.write( ParseToJson.Settings( this ) );
 		
 		settingsWriter.close();

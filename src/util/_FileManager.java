@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 
 import json.*;
@@ -12,7 +13,7 @@ import json.*;
  * A collection of utilities for the management of files pertaining to the functionality of the launcher
  */
 
-public class FileManager {
+public class _FileManager {
 	
 	private static String filePath = SystemInfo.getLauncherDir() + SystemInfo.getSystemFileSeperator();
 	private static String[] configFiles;
@@ -28,11 +29,12 @@ public class FileManager {
 				
 			}
 			
+			/*
 			String fileContent = download( fileName );
 			if ( fileContent != null && fileContent != "DOWNLOAD_FAILURE" ) {
 				update( fileName, fileContent );
 				
-			}
+			}*/
 			
 		}
 		
@@ -40,8 +42,14 @@ public class FileManager {
 
 	//Returns true if the file of interest has no content
 	public static boolean isEmpty( String fileName ) throws IOException {
+		File file = new File( filePath + fileName + ".json" );
+		if ( !file.exists() ) {
+			file.createNewFile();
+			
+		}
+		
 		try {
-			BufferedReader reader = new BufferedReader( new FileReader( filePath + fileName + ".json" ) );
+			BufferedReader reader = new BufferedReader( new FileReader( file ) );
 			if ( reader.readLine() == null ) {
 				reader.close();
 				return true;
@@ -96,11 +104,11 @@ public class FileManager {
 	//Downloads the content for a specific file
 	//If this returns null, leave the current file AS IS
 	//If this returns anything else, that is the necessary content; Use this string to create a JSON object
-	public static String download( String fileName ) {
+	public static String download( String downloadName, String downloadContentKey ) {
 		String downloadStatus = "DOWNLOAD_PENDING";
 		String content = null;
 		
-		switch ( fileName ) {
+		switch ( downloadName ) {
 		case "ModpackVersionManifest":
 			return content;
 		case "VersionManifest":
@@ -123,7 +131,7 @@ public class FileManager {
 			
 		default:
 			//see? here it is again!
-			System.out.println( "[Draconic Launcher][FileManager][Info] No downloaded content for " + fileName + ".json" );
+			System.out.println( "[Draconic Launcher][FileManager][Info] No downloaded content for " + downloadName + ".json" );
 			return null;
 			
 		}
@@ -132,8 +140,8 @@ public class FileManager {
 	
 	//Returns all the files for verifyFile to check
 	//verifyFile has the option for a short list if just one file needs to be checked
-	public static String[] getAllFiles() {
-		configFiles = new String[] {"Settings"};
+	public static String[] getLauncherFiles() {
+		configFiles = new String[] {"settings"};
 		
 		return configFiles;
 		

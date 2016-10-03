@@ -18,7 +18,6 @@ import util.SystemInfo;
  */
 
 //not serialized, I know... I'll do that when I understand what it does
-@SuppressWarnings("unused")
 public class LauncherGUI extends JFrame {
 	
 	static int WIDTH;

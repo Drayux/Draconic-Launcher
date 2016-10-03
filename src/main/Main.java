@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import gui.LauncherGUI;
 import json.Settings;
-import util.FileManager;
+import util._FileManager;
 import util.SystemInfo;
 
 public class Main {
@@ -21,7 +21,7 @@ public class Main {
 		//also needs to check install directory and prompt user if nonexistent
 		
 		//Verifies that all the launcher files have the necessary information
-		FileManager.verifyFile( FileManager.getAllFiles() );
+		//FileManager.verifyFile( FileManager.getLauncherFiles() );
 		
 		//Generates settings object from file
 		Settings.generate();

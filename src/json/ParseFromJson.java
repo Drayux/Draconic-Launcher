@@ -84,8 +84,8 @@ public class ParseFromJson {
 		
 	}
 	
-	public static Settings settings( String file ) throws IOException, JsonSyntaxException {
-		FileReader settingsReader = new FileReader( filePath + file );
+	public static Settings settings( String fileName ) throws IOException, JsonSyntaxException {
+		FileReader settingsReader = new FileReader( filePath + fileName );
 		Settings settings = gsonObject.fromJson( settingsReader, Settings.class );
 		
 		settingsReader.close();
