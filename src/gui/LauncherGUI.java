@@ -8,9 +8,9 @@ import java.awt.event.WindowListener;
 import java.io.IOException;
 import javax.swing.*;
 
+import file.Settings;
 import json.ParseFromJson;
 import json.ParseToJson;
-import json.Settings;
 import util.SystemInfo;
 
 /*
@@ -117,7 +117,7 @@ public class LauncherGUI extends JFrame {
 			public void windowClosed( WindowEvent e ) {
 				System.out.println( "[Draconic Launcher][LauncherGUI][Info] Saving settings..." );
 				try {
-					Settings.settings.write();
+					Settings.settings.write( true );
 					
 				} 
 				catch ( IOException exception ) {
@@ -254,7 +254,7 @@ public class LauncherGUI extends JFrame {
 			public void windowClosed( WindowEvent e ) {
 				System.out.println( "[Draconic Launcher][LauncherGUI][Info] Saving settings..." );
 				try {
-					Settings.settings.write();
+					Settings.settings.write( true );
 					
 				} 
 				catch ( IOException exception ) {

@@ -1,16 +1,15 @@
 package json;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
-//import json.testjson;
+import file.Settings;
+//import json._testjson;
 import json.AssetIndex;
 import json.LocalModpacks;
 import json.ModpackIndex;
-import json.Settings;
 import json.VersionLaunchJson;
 import json.VersionManifest;
 import util.SystemInfo;
@@ -26,8 +25,8 @@ public class ParseFromJson {
 		
 	}
 	
-	public static boolean verifySyntax( String fileName ) throws FileNotFoundException {
-		FileReader reader = new FileReader( filePath + fileName + ".json" );
+	public static boolean verifySyntax( String filePath ) throws IOException {
+		FileReader reader = new FileReader( filePath );
 		try {
 			gsonObject.fromJson( reader, Object.class );
 			return true;
@@ -84,8 +83,8 @@ public class ParseFromJson {
 		
 	}
 	
-	public static Settings settings( String fileName ) throws IOException, JsonSyntaxException {
-		FileReader settingsReader = new FileReader( filePath + fileName );
+	public static Settings settings() throws IOException, JsonSyntaxException {
+		FileReader settingsReader = new FileReader( filePath + "settings.json" );
 		Settings settings = gsonObject.fromJson( settingsReader, Settings.class );
 		
 		settingsReader.close();

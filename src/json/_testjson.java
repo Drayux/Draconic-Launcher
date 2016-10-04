@@ -3,7 +3,7 @@ package json;
 import java.util.ArrayList;
 import java.util.List;
 
-public class testjson {
+public class _testjson {
 	
 	//default values
 	public String test1 = "my penis is 7 inches";
@@ -11,7 +11,7 @@ public class testjson {
 	public double dinosaur;
 	
 	//parameters are changes to the defaults
-	public testjson( String paramTest, List<Integer> paramList, double paramDino ) {
+	public _testjson( String paramTest, List<Integer> paramList, double paramDino ) {
 		
 		if ( paramTest != null ) {
 			this.test1 = paramTest;
@@ -21,7 +21,7 @@ public class testjson {
 		
 	}
 	
-	public testjson( String paramTest, double paramDino ) {
+	public _testjson( String paramTest, double paramDino ) {
 		
 		if ( paramTest != null ) {
 			this.test1 = paramTest;

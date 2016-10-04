@@ -12,7 +12,7 @@ import json.*;
 /*
  * A collection of utilities for the management of files pertaining to the functionality of the launcher
  */
-
+@SuppressWarnings("unused")
 public class _FileManager {
 	
 	private static String filePath = SystemInfo.getLauncherDir() + SystemInfo.getSystemFileSeperator();
