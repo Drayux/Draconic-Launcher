@@ -34,6 +34,8 @@ public class LauncherFile {
 		
 	}
 	
+	//Default method to write to the file
+	//Most methods will override this (but not actually @override, I have no idea what this is called)
 	public void write( String content ) throws IOException {
 		verifyFile( this );
 		
@@ -45,6 +47,56 @@ public class LauncherFile {
 		
 	}
 	
+	//Method is used to create path for a file
+	//It's a separate method because I need to generate a file object based on the directory tree of the file
+	public static boolean createPath( String path ) {
+		File launcherFilePath = new File( path );
+		return launcherFilePath.mkdirs();
+		
+	}
+	
+	public boolean verifyFilePermissions() {
+		File launcherFile = new File( this.filePath );
+		if ( launcherFile.canWrite() ) {
+			return true;
+			
+		}
+		
+		return false;
+		
+	}
+	
+	public static boolean verifyDirectoryPermissions( String path ) {
+		File directoryPath = new File( path );
+		File tempFile = new File( path + SystemInfo.getSystemFileSeperator() + "TEMP" );
+		
+		boolean directoryPermissions = true;
+		
+		System.out.println( "[Draconic Launcher][LauncherFile][Info] Verifying " + path + "..." );
+		
+		try {
+			directoryPath.mkdirs();
+			tempFile.createNewFile();
+			
+			FileWriter writer = new FileWriter( tempFile );
+			
+			writer.write( "Drayux loves Zahrya! <3 <3 <3" );
+			writer.close();
+			
+		}
+		catch ( IOException exception ) {
+			directoryPermissions = false;
+			
+		}
+		if ( tempFile.exists() ) {
+			tempFile.delete();
+			
+		}
+		
+		return directoryPermissions;
+	
+	}
+	
 	public boolean isEmpty() throws IOException {
 		BufferedReader reader = new BufferedReader( new FileReader( this.filePath ) );
 		if ( reader.readLine() == null ) {
@@ -52,11 +104,9 @@ public class LauncherFile {
 			return true;
 			
 		}
-		else {
-			reader.close();
-			return false;
-			
-		}
+		
+		reader.close();
+		return false;
 		
 	}
 	
@@ -69,9 +119,34 @@ public class LauncherFile {
 		boolean fileValid = true;
 		
 		if ( !launcherFile.exists() ) {
+			if ( createPath( file.path ) ) {
+				System.out.println( "[Draconic Launcher][LauncherFile][Info] Generated path: " + file.path );
+				
+			}
+			
 			System.out.println( "[Draconic Launcher][LauncherFile][Info] Generating new file at " + file.filePath );
+			
 			launcherFile.createNewFile();
 			fileValid = false;
+			
+		}
+		
+		//Permissions check not fully necessary in this field
+		//Still good to check tho
+		if ( !file.verifyFilePermissions() ) {
+			System.out.println( "[Draconic Launcher][LauncherFile][Info] Launcher does not have write permissions for " + file.name + ".json." );
+			
+			if ( file.path == SystemInfo.getLauncherDir() ) {
+				//change this to some sort of warning eventually
+				System.out.println( "[Draconic Launcher][LauncherFile][Warn] Exiting launcher with error code: 100 - Invalid permissions in critical directory" );
+				System.exit( 100 );
+				
+			}
+			else {
+				Settings.settings.gameDirectory = null;
+				Settings.settings.write( false );
+				
+			}
 			
 		}
 		
@@ -85,11 +160,6 @@ public class LauncherFile {
 		
 		//return statement simply for launcher console output
 		return fileValid;
-		
-	}
-	
-	public static boolean checkDirectoryPermissions() {
-		return false;
 		
 	}
 	

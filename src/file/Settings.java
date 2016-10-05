@@ -69,6 +69,8 @@ public class Settings extends LauncherFile {
 	
 	// Writes data of settings object (followed by this) to the settings file
 	public void write( boolean verify ) throws IOException {
+		// This check is not actually necessary as the file will be overwritten.
+		//I had it here thinking it was a good idea, but the only time the file integrity really matters is on its load
 		if ( verify ) {
 			verifyFile( this );
 			
@@ -78,7 +80,7 @@ public class Settings extends LauncherFile {
 		settingsWriter.write( ParseToJson.settings( this ) );
 		
 		settingsWriter.close();
-		System.out.println( "[Draconic Launcher][Settings][Info] Successfully updated settings file" );
+		System.out.println( "[Draconic Launcher][Settings][Info] Successfully wrote to settings file" );
 		
 	}
 	

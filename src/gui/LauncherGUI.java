@@ -8,6 +8,7 @@ import java.awt.event.WindowListener;
 import java.io.IOException;
 import javax.swing.*;
 
+import file.LauncherFile;
 import file.Settings;
 import json.ParseFromJson;
 import json.ParseToJson;
@@ -117,14 +118,14 @@ public class LauncherGUI extends JFrame {
 			public void windowClosed( WindowEvent e ) {
 				System.out.println( "[Draconic Launcher][LauncherGUI][Info] Saving settings..." );
 				try {
-					Settings.settings.write( true );
+					Settings.settings.write( false );
 					
 				} 
 				catch ( IOException exception ) {
 					exception.printStackTrace();
 					
 				}
-				System.out.println( "[Draconic Launcher][LauncherGUI][Info] Settings saved" );
+				//System.out.println( "[Draconic Launcher][LauncherGUI][Info] Settings saved" );
 				
 				System.out.println( "[Draconic Launcher][LauncherGUI][Info] Closing launcher..." );
 				System.exit( 0 );
@@ -167,23 +168,49 @@ public class LauncherGUI extends JFrame {
 		
 		JButton browse = new JButton();
 		browse.setText( "Browse" );
+		//button format testing...
+		//browse.setFocusPainted( false );
 		browse.addActionListener( new ActionListener() {
 			public void actionPerformed( ActionEvent e ) {
+				System.out.println( "[Draconic Launcher][LauncherGUI][Info] Generating browse window..." );
+				
+				JFileChooser chooser = new JFileChooser();
+				chooser.setFileSelectionMode( JFileChooser.DIRECTORIES_ONLY );
+				
+				if ( chooser.showOpenDialog( gameDirectoryPrompt ) == JFileChooser.APPROVE_OPTION ) {
+					directoryPrompt.setText( chooser.getSelectedFile().getAbsolutePath() );
+					
+				}
 				
 			}
 		});
 		
 		JButton accept = new JButton();
 		accept.setText( "Accept" );
+		//button format testing...
+		//accept.setBackground( new Color( 255, 32, 32 ) );
 		accept.addActionListener( new ActionListener() {
 			public void actionPerformed( ActionEvent e ) {
+				if ( LauncherFile.verifyDirectoryPermissions( directoryPrompt.getText() ) ) {
+					System.out.println( "[Draconic Launcher][LauncherGUI][Info] Directory successfully verified" );
+					
+					Settings.settings.gameDirectory = directoryPrompt.getText();
+					
+					gameDirectoryPrompt.dispose();
+					
+				}
 				
 			}
 		});
 		JButton cancel = new JButton();
 		cancel.setText( "Cancel" );
+		//button format testing...
+		//cancel.setBorder( null );
 		cancel.addActionListener( new ActionListener() {
 			public void actionPerformed( ActionEvent e ) {
+				Settings.settings.gameDirectory = SystemInfo.getLauncherDir();
+				
+				gameDirectoryPrompt.dispose();
 				
 			}
 		});
@@ -233,9 +260,32 @@ public class LauncherGUI extends JFrame {
 			);
 			*/
 		layout.setHorizontalGroup( layout.createSequentialGroup()
+			.addGroup( layout.createParallelGroup()
+				.addComponent( enterGameDirectory )
+				.addComponent( directoryPrompt )
+				.addComponent( accept, GroupLayout.Alignment.TRAILING )
+				)
+			.addPreferredGap( LayoutStyle.ComponentPlacement.RELATED )
+			.addGroup( layout.createParallelGroup()
+				.addComponent( browse )
+				.addComponent( cancel )
+				)
 			);
 		layout.setVerticalGroup( layout.createSequentialGroup()
+			.addComponent( enterGameDirectory )
+			.addPreferredGap( LayoutStyle.ComponentPlacement.RELATED )
+			.addGroup( layout.createParallelGroup( GroupLayout.Alignment.BASELINE )
+				.addComponent( directoryPrompt, 28, 28, 28 )
+				.addComponent( browse, 27, 27, 27 )
+				)
+			.addPreferredGap( LayoutStyle.ComponentPlacement.UNRELATED )
+			.addGroup( layout.createParallelGroup()
+				.addComponent( accept )
+				.addComponent( cancel )
+				)
 			);
+		layout.linkSize( SwingConstants.HORIZONTAL, accept, cancel, browse );
+		layout.linkSize( SwingConstants.VERTICAL, accept, cancel, browse );
 		
 		gameDirectoryPrompt.addWindowListener( new WindowListener() {
 			public void windowOpened( WindowEvent e ) {
@@ -250,18 +300,22 @@ public class LauncherGUI extends JFrame {
 				System.exit( 0 );
 				
 			}
-			//Always called upon close
+			//Always called upon close, skipped on X because of System.exit(0);
 			public void windowClosed( WindowEvent e ) {
+				System.out.println( "Set game directory as: " + Settings.settings.gameDirectory );
+				
 				System.out.println( "[Draconic Launcher][LauncherGUI][Info] Saving settings..." );
 				try {
-					Settings.settings.write( true );
+					Settings.settings.write( false );
 					
 				} 
 				catch ( IOException exception ) {
 					exception.printStackTrace();
 					
 				}
-				System.out.println( "[Draconic Launcher][LauncherGUI][Info] Settings saved" );
+				//System.out.println( "[Draconic Launcher][LauncherGUI][Info] Settings saved" );
+				
+				createMainGUI( "Draconic Launcher" );
 				
 			}
 			public void windowIconified( WindowEvent e ) {}
@@ -271,6 +325,8 @@ public class LauncherGUI extends JFrame {
 			});
 		
 		gameDirectoryPrompt.pack();
+		gameDirectoryPrompt.setAlwaysOnTop( true );
+		gameDirectoryPrompt.getRootPane().setDefaultButton( accept );
 		gameDirectoryPrompt.setVisible( true );
 		
 	}
