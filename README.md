@@ -4,7 +4,7 @@ The open-source Minecraft modpack launcher!
 Currently early on in development, this project is a continuation of my over-done Python script that functioned as a custom Minecraft launcher. I created it so that modding the environment could be easier and more convenient. This program aims to support it's own modpacks, as well as those from other popular launchers. It will then create an manages multiple instances of the game for efficient creation of custom modpacks.
 
 **TODO:**
-(Lots to put here, but let's get the basics down!)
+_(Lots to put here, but let's get the basics down!)_
 - Complete the main program
 	- Login System
 	- Game Launch
@@ -40,4 +40,7 @@ Currently early on in development, this project is a continuation of my over-don
 	- Multicraft access portal (if possible)
 		- Local client to manage multicraft servers
 		- Built-in FTP support
+<<<<<<< HEAD
 - Feature: listing of mojang servers (using the mojang API)
+=======
+>>>>>>> 2b6ce731d5ffb54fbc6b1236e4bd9536d2189696
