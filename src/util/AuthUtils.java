@@ -4,11 +4,6 @@ package util;
 
 public class AuthUtils {
 
-	public static boolean Login(String username, String password) {
-		
-		//temporary return
-		return false;
-		
-	}
+	
 	
 }

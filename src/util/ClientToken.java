@@ -10,23 +10,14 @@ public class ClientToken {
 	public String token;
 	
 	private Random randy = new Random();
-	int index;
-	
-	//Defines what a client token is
-	public ClientToken( String token ) {
-		
-		this.token = token;
-
-	}
+	private int index;
 	
 	//Generates a new token when called on the object
 	public void generateToken() {
-		
 		for ( int i = 0 ; i <= 32 - 1 ; i++ ) {
-			
 			index = randy.nextInt(25);
 			
-			if (index < 10) {
+			if ( index < 10 ) {
 				tokenArray[i] = Integer.toString(index);
 				
 			}
@@ -34,7 +25,13 @@ public class ClientToken {
 				tokenArray[i] = chars[index - 10];
 			
 			}
+			
 		}
+		
+		/* Screwing around with some stuff
+		ClientToken test = new ClientToken();
+		test.token = String.join( "", tokenArray);
+		return test; */
 		
 		this.token = String.join( "", tokenArray);
 	

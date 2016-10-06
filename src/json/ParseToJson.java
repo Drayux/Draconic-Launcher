@@ -39,4 +39,9 @@ public class ParseToJson {
 		
 	}
 	
+	public static String authPayload( AuthPayload authPayloadObject ) {
+		return gsonObject.toJson( authPayloadObject );
+		
+	}
+	
 }

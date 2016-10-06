@@ -9,15 +9,21 @@ public class SystemInfo {
 	public static String getSystemOS() {
 		String systemOS = System.getProperty( "os.name" ).toLowerCase();
 		
-		if (systemOS.contains( "osx" )) {
+		if ( systemOS.contains( "linux" ) ) {
+			return "LINUX";
+			
+		}
+		else if ( systemOS.contains( "osx" ) ) {
 			return "OSX";
 			
 		}
-		else if (systemOS.contains( "unix" )) {
+		/* Don't think I need this...
+		 * Originally thought linux was spelled lunix or something silly...apparently
+		 else if ( systemOS.contains( "unix" ) ) {
 			return "UNIX";
 			
-		}
-		else if (systemOS.contains( "windows" )) {
+		} */
+		else if ( systemOS.contains( "windows" ) ) {
 			return "WINDOWS";
 			
 		}

@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import file.Settings;
 import gui.LauncherGUI;
+import json.AuthPayload;
+import json.ParseToJson;
 import util.SystemInfo;
 
 /*
@@ -22,7 +24,8 @@ public class Main {
 		System.out.println( "[Draconic Launcher][SystemInfo][Info] Java Version: " + SystemInfo.getJavaVersion() );
 		System.out.println( "[Draconic Launcher][SystemInfo][Info] Total Memory: " + ( SystemInfo.getSystemMemory() / 1024 ) + " GiB (" + ( SystemInfo.getSystemMemory() * 1048567 ) + " bytes)" );
 		System.out.println( "[Draconic Launcher][SystemInfo][Info] Launcher Directory: " + SystemInfo.getLauncherDir() );
-		//also needs to check install directory and prompt user if nonexistent
+
+		//System.out.println( ParseToJson.authPayload( new AuthPayload( "testusr", new CharSequence[]{"h"} ) ) );
 		
 		//Generates settings object from file
 		Settings.generate();

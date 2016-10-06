@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import json.ParseFromJson;
 import json.ParseToJson;
+import util.ClientToken;
 import util.SystemInfo;
 
 //Maybe create some sort of interface in setting?
@@ -18,6 +19,7 @@ public class Settings extends LauncherFile {
 	//Anything NOT here WILL BE LOST upon update of the file
 	public String gameDirectory;
 	public Boolean stayLoggedIn;
+	public String clientToken;
 	
 	public Settings() throws IOException {
 		super( SystemInfo.getLauncherDir(), "settings" );
@@ -62,6 +64,14 @@ public class Settings extends LauncherFile {
 		if ( stayLoggedIn == null || reset ) {
 			this.stayLoggedIn = false;
 			System.out.println( "[Draconic Launcher][Settings][Info] Reset stayLoggedIn to default value" );
+			
+		}
+		//Client Token:
+		//if stayLoggedIn != true, reset this to null upon close of main window and invalidate authtoken
+		if ( clientToken == null ) {
+			ClientToken token = new ClientToken();
+			token.generateToken();
+			this.clientToken = token.token;
 			
 		}
 		

@@ -40,3 +40,4 @@ Currently early on in development, this project is a continuation of my over-don
 	- Multicraft access portal (if possible)
 		- Local client to manage multicraft servers
 		- Built-in FTP support
+- Feature: listing of mojang servers (using the mojang API)

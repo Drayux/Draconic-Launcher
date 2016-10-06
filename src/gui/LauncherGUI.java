@@ -1,17 +1,13 @@
 package gui;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.event.*;
 import java.io.IOException;
 import javax.swing.*;
 
 import file.LauncherFile;
 import file.Settings;
-import json.ParseFromJson;
-import json.ParseToJson;
+import json.AuthPayload;
 import util.SystemInfo;
 
 /*
@@ -20,9 +16,12 @@ import util.SystemInfo;
 
 //not serialized, I know... I'll do that when I understand what it does
 public class LauncherGUI extends JFrame {
+	private static final long serialVersionUID = 1L;
 	
 	static int WIDTH;
 	static int HEIGTH;
+	
+	private AuthPayload payload;
 	private static String gameDirectory = SystemInfo.getLauncherDir();
 	
 	private LauncherGUI( String title ) {
@@ -31,6 +30,7 @@ public class LauncherGUI extends JFrame {
 	}
 	
 	public static void createMainGUI( String title ) {
+		//this method REALLY needs to be reorganized
 		System.out.println( "[Draconic Launcher][LauncherGUI][Info] Creating launcher window..." );
 		
 		/*
@@ -57,10 +57,10 @@ public class LauncherGUI extends JFrame {
 		JPanel login = new JPanel();
 		JPanel actions = new JPanel();
 		JPanel settings = new JPanel();
-		JPanel gameOutput = new JPanel();
-		JPanel modpackSelect = new JPanel();
-		JPanel modpackInfo = new JPanel();
-		JPanel toolbar = new JPanel();
+		//JPanel gameOutput = new JPanel();
+		//JPanel modpackSelect = new JPanel();
+		//JPanel modpackInfo = new JPanel();
+		//JPanel toolbar = new JPanel();
 		JPanel background = new JPanel();
 		
 		//BUTTONS
@@ -81,6 +81,108 @@ public class LauncherGUI extends JFrame {
 			}
 		}); */
 		
+		JTextField usernameField = new JTextField();
+		usernameField.setFont( login.getFont().deriveFont( Font.PLAIN, 14f ) );
+		usernameField.setText( "Username" );
+		usernameField.addKeyListener( new KeyListener() {
+			//maybe add a system where enter key will move to password
+			public void keyPressed( KeyEvent e ) {}
+			public void keyReleased( KeyEvent e ) {}
+			
+			public void keyTyped( KeyEvent keyEvent ) {
+				char key = keyEvent.getKeyChar();
+				
+				if ( key == ' ' || key == ';' ) {
+					keyEvent.consume();
+					System.out.println( "[Draconic Launcher][LauncherGUI][Info] Invalid key: " + key );
+					
+				}
+				
+			}
+			
+		});
+		usernameField.addFocusListener( new FocusListener() {
+			//Boolean just for that one guy with the name 'Username'
+			private boolean nameUsername = false;
+			
+			public void focusGained( FocusEvent event ) {
+				if ( usernameField.getText().trim().equals( "Username" ) && !nameUsername ) {
+					usernameField.setText( "" );
+					//set font colour: black
+					
+				}
+				
+			}
+
+			public void focusLost( FocusEvent event ) {
+				if ( usernameField.getText().trim().equals( "" ) ) {
+					//set font colour: grey
+					usernameField.setText( "Username" );
+					nameUsername = false;
+					
+				}
+				else if ( usernameField.getText().trim().equals( "Username" ) ) {
+					nameUsername = true;
+					
+				}
+				else {
+					//set font colour: black
+					nameUsername = false;
+					
+				}
+				
+			}
+			
+		});
+		
+		JPasswordField passwordField = new JPasswordField();
+		passwordField.setFont( login.getFont().deriveFont( Font.PLAIN, 14f ) );
+		passwordField.setEchoChar( (char)0 );
+		passwordField.setText( "Password" );
+		passwordField.addFocusListener( new FocusListener() {
+			//Boolean if you're actually dumb enough to have your password as 'Password'
+			private boolean passwordPassword = false;
+			
+			public void focusGained( FocusEvent event ) {
+				//Should replace deprecated method with this, but I've failed to do so
+				//passwordField.getPassword().equals( new char[] {'P','a','s','s','w','o','r','d'} )
+				if ( passwordField.getText().trim().equals( "Password" ) && !passwordPassword ) {
+					passwordField.setText( "" );
+					passwordField.setEchoChar( '*' );
+					//set font colour: black
+					
+				}
+				
+			}
+
+			public void focusLost( FocusEvent event ) {
+				//this case:
+				//passwordField.getPassword().equals( new char[0] )
+				if ( passwordField.getText().trim().equals( "" ) ) {
+					passwordField.setEchoChar( (char)0 );
+					//set font colour: grey
+					passwordField.setText( "Password" );
+					passwordPassword = false;
+					
+				}
+				else if ( passwordField.getText().trim().equals( "Password" ) ) {
+					passwordPassword = true;
+					
+				}
+				else {
+					passwordField.setEchoChar( '*' );
+					//set font colour: black
+					passwordPassword = false;
+					
+				}
+				
+			}
+			
+		});
+		
+		JButton loginButton = new JButton();
+		loginButton.setText( "Login" );
+		
 		//launcherWindow.setIconImage(image);
 		launcherWindow.setSize( windowSize );
 		//launcherWindow.setResizable(false);
@@ -89,12 +191,15 @@ public class LauncherGUI extends JFrame {
 		launcherWindow.setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
 		
 		launcherWindow.add( login );
+		login.add( usernameField );
+		login.add( passwordField );
+		login.add( loginButton );
 		
 		launcherWindow.add( actions );
 		
 		launcherWindow.add( settings );
 		
-		background.setBackground(Color.DARK_GRAY);
+		//background.setBackground(Color.DARK_GRAY);
 		//background.add( jsonTestButton );
 		launcherWindow.add( background );
 		
@@ -116,6 +221,19 @@ public class LauncherGUI extends JFrame {
 				
 			}
 			public void windowClosed( WindowEvent e ) {
+				if ( Settings.settings.stayLoggedIn == false ) {
+					//beginning of try-catch
+					System.out.println( "[Draconic Launcher][LauncherGUI][Info] Invalidating session..." );
+					
+					//block to send post request to /invalidate or /signout endpoint
+					
+					System.out.println( "[Draconic Launcher][LauncherGUI][Info] Successfully logged out" );
+					
+					//end of try-catch
+					Settings.settings.clientToken = null;
+					
+				}
+				
 				System.out.println( "[Draconic Launcher][LauncherGUI][Info] Saving settings..." );
 				try {
 					Settings.settings.write( false );
@@ -149,6 +267,9 @@ public class LauncherGUI extends JFrame {
 			}
 		});
 		
+		//todo: layout
+		
+		launcherWindow.setLayout( new FlowLayout() );
 		launcherWindow.setVisible( true );
 		
 	}
@@ -201,7 +322,9 @@ public class LauncherGUI extends JFrame {
 				}
 				
 			}
+			
 		});
+		
 		JButton cancel = new JButton();
 		cancel.setText( "Cancel" );
 		//button format testing...
@@ -213,6 +336,7 @@ public class LauncherGUI extends JFrame {
 				gameDirectoryPrompt.dispose();
 				
 			}
+			
 		});
 		
 		JLabel separator = new JLabel();
