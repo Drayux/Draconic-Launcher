@@ -40,7 +40,4 @@ _(Lots to put here, but let's get the basics down!)_
 	- Multicraft access portal (if possible)
 		- Local client to manage multicraft servers
 		- Built-in FTP support
-<<<<<<< HEAD
 - Feature: listing of mojang servers (using the mojang API)
-=======
->>>>>>> 2b6ce731d5ffb54fbc6b1236e4bd9536d2189696
