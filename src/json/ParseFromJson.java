@@ -39,6 +39,24 @@ public class ParseFromJson {
 		
 	}
 	
+	//DOWNLOADS
+	public static AuthResponse authResponse( String response ) {
+		AuthResponse authResponse = gsonObject.fromJson( response, AuthResponse.class );
+		
+		return authResponse;
+		
+	}
+	
+	//FILES
+	public static Settings settings() throws IOException, JsonSyntaxException {
+		FileReader settingsReader = new FileReader( filePath + "settings.json" );
+		Settings settings = gsonObject.fromJson( settingsReader, Settings.class );
+		
+		settingsReader.close();
+		return settings;
+		
+	}
+	
 	/* Google GSON Testing
 	public static testjson testjson( String jsonTestString ) {
 		return gsonObject.fromJson( jsonTestString, testjson.class );
@@ -80,15 +98,6 @@ public class ParseFromJson {
 		
 		modpackIndexReader.close();
 		return modpackIndex;
-		
-	}
-	
-	public static Settings settings() throws IOException, JsonSyntaxException {
-		FileReader settingsReader = new FileReader( filePath + "settings.json" );
-		Settings settings = gsonObject.fromJson( settingsReader, Settings.class );
-		
-		settingsReader.close();
-		return settings;
 		
 	}
 	

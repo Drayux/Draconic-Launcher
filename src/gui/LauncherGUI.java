@@ -3,11 +3,15 @@ package gui;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
+import java.util.Arrays;
+
 import javax.swing.*;
 
 import file.LauncherFile;
 import file.Settings;
 import json.AuthPayload;
+import json.ParseToJson;
+import util.AuthUtils;
 import util.SystemInfo;
 
 /*
@@ -82,7 +86,7 @@ public class LauncherGUI extends JFrame {
 		}); */
 		
 		JTextField usernameField = new JTextField();
-		usernameField.setFont( login.getFont().deriveFont( Font.PLAIN, 14f ) );
+		usernameField.setFont( login.getFont().deriveFont( Font.BOLD, 14f ) );
 		usernameField.setText( "Username" );
 		usernameField.addKeyListener( new KeyListener() {
 			//maybe add a system where enter key will move to password
@@ -136,7 +140,7 @@ public class LauncherGUI extends JFrame {
 		});
 		
 		JPasswordField passwordField = new JPasswordField();
-		passwordField.setFont( login.getFont().deriveFont( Font.PLAIN, 14f ) );
+		passwordField.setFont( login.getFont().deriveFont( Font.BOLD, 14f ) );
 		passwordField.setEchoChar( (char)0 );
 		passwordField.setText( "Password" );
 		passwordField.addFocusListener( new FocusListener() {
@@ -148,8 +152,12 @@ public class LauncherGUI extends JFrame {
 				//passwordField.getPassword().equals( new char[] {'P','a','s','s','w','o','r','d'} )
 				if ( passwordField.getText().trim().equals( "Password" ) && !passwordPassword ) {
 					passwordField.setText( "" );
-					passwordField.setEchoChar( '*' );
+					passwordField.setEchoChar( (char)8226 );
 					//set font colour: black
+					
+				} 
+				else if ( passwordField.getText().trim().equals("") ) {
+					passwordPassword = false;
 					
 				}
 				
@@ -170,7 +178,7 @@ public class LauncherGUI extends JFrame {
 					
 				}
 				else {
-					passwordField.setEchoChar( '*' );
+					passwordField.setEchoChar( (char)8226 );
 					//set font colour: black
 					passwordPassword = false;
 					
@@ -182,6 +190,19 @@ public class LauncherGUI extends JFrame {
 		
 		JButton loginButton = new JButton();
 		loginButton.setText( "Login" );
+		loginButton.addActionListener( new ActionListener() {
+			public void actionPerformed( ActionEvent event ) {
+				AuthPayload payload = new AuthPayload( usernameField.getText().trim(), passwordField.getPassword() );
+				passwordField.setText( "" );
+				//Arrays.fill( passwordField.getPassword(), '0' );
+				
+				System.out.println( ParseToJson.authPayload( payload ) );
+				
+				System.out.println( AuthUtils.post( "authenticate", ParseToJson.authPayload( payload ) ) );
+				
+			}
+			
+		});
 		
 		//launcherWindow.setIconImage(image);
 		launcherWindow.setSize( windowSize );
@@ -216,10 +237,12 @@ public class LauncherGUI extends JFrame {
 				System.out.println( "[Draconic Launcher][LauncherGUI][Info] Successfully created launcher window" );
 				
 			}
+			
 			public void windowClosing( WindowEvent e ) {
 				//System.out.println( "[Draconic Launcher][LauncherGUI][Info] Closing launcher..." );
 				
 			}
+			
 			public void windowClosed( WindowEvent e ) {
 				if ( Settings.settings.stayLoggedIn == false ) {
 					//beginning of try-catch
@@ -249,22 +272,27 @@ public class LauncherGUI extends JFrame {
 				System.exit( 0 );
 				
 			}
+			
 			public void windowIconified( WindowEvent e ) {
 				//System.out.println( "ICONIFIED" );
 				
 			}
+			
 			public void windowDeiconified( WindowEvent e ) {
 				//System.out.println( "DEICONIFIED" );
 				
 			}
+			
 			public void windowActivated( WindowEvent e ) {
 				//System.out.println( "ACTIVATED" );
 				
 			}
+			
 			public void windowDeactivated( WindowEvent e ) {
 				//System.out.println( "DEACTIVATED" );
 				
 			}
+			
 		});
 		
 		//todo: layout
