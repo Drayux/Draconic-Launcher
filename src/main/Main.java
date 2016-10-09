@@ -1,11 +1,16 @@
 package main;
 
 import java.io.IOException;
+import java.security.InvalidKeyException;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+
+import file.Profile;
 import file.Settings;
 import gui.LauncherGUI;
-import json.AuthPayload;
-import json.ParseToJson;
+//import json.AuthPayload;
+//import json.ParseToJson;
 import util.SystemInfo;
 
 /*
@@ -26,6 +31,13 @@ public class Main {
 		System.out.println( "[Draconic Launcher][SystemInfo][Info] Launcher Directory: " + SystemInfo.getLauncherDir() );
 
 		//System.out.println( ParseToJson.authPayload( new AuthPayload( "testusr", new CharSequence[]{"h"} ) ) );
+		Profile prof = new Profile( "3kjlsdfj" );
+		try {
+			prof.read( prof.write() );
+		} catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		//Generates settings object from file
 		Settings.generate();

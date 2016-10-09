@@ -3,6 +3,7 @@ package json;
 //import java.util.List;
 import com.google.gson.*;
 
+import file.Profile;
 import file.Settings;
 
 public class ParseToJson {
@@ -36,6 +37,11 @@ public class ParseToJson {
 	
 	public static String settings( Settings settingsObject ) {
 		return gsonObject.toJson( settingsObject );
+		
+	}
+	
+	public static String profile( Profile profileObject ) {
+		return gsonObject.toJson( profileObject );
 		
 	}
 	

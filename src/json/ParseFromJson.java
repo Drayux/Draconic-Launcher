@@ -6,12 +6,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import file.Settings;
-//import json._testjson;
-import json.AssetIndex;
-import json.LocalModpacks;
-import json.ModpackIndex;
-import json.VersionLaunchJson;
-import json.VersionManifest;
 import util.SystemInfo;
 
 public class ParseFromJson {
@@ -72,49 +66,51 @@ public class ParseFromJson {
 		System.out.println( tjfromfile.dinosaur + " " + tjfromfile.test1 + " " + tjfromfile.list);
 		return tjfromfile;
 		
-	} */
+	}
 	
-	public static AssetIndex assetIndex( String file ) throws IOException, JsonSyntaxException {
+	* CURRENTLY UNUSED
+	
+	public static _AssetIndex assetIndex( String file ) throws IOException, JsonSyntaxException {
 		FileReader assetIndexReader = new FileReader( filePath + file );
-		AssetIndex assetIndex = gsonObject.fromJson( assetIndexReader, AssetIndex.class );
+		_AssetIndex assetIndex = gsonObject.fromJson( assetIndexReader, _AssetIndex.class );
 		
 		assetIndexReader.close();
 		return assetIndex;
 		
 	}
 	
-	public static LocalModpacks localModpacks( String file ) throws IOException, JsonSyntaxException {
+	public static _LocalModpacks localModpacks( String file ) throws IOException, JsonSyntaxException {
 		FileReader localModpacksReader = new FileReader( filePath + file );
-		LocalModpacks localModpacks = gsonObject.fromJson( localModpacksReader, LocalModpacks.class );
+		_LocalModpacks localModpacks = gsonObject.fromJson( localModpacksReader, _LocalModpacks.class );
 		
 		localModpacksReader.close();
 		return localModpacks;
 		
 	}
 	
-	public static ModpackIndex modpackIndex( String file ) throws IOException, JsonSyntaxException {
+	public static _ModpackIndex modpackIndex( String file ) throws IOException, JsonSyntaxException {
 		FileReader modpackIndexReader = new FileReader( filePath + file );
-		ModpackIndex modpackIndex = gsonObject.fromJson( modpackIndexReader, ModpackIndex.class );
+		_ModpackIndex modpackIndex = gsonObject.fromJson( modpackIndexReader, _ModpackIndex.class );
 		
 		modpackIndexReader.close();
 		return modpackIndex;
 		
 	}
 	
-	public static VersionLaunchJson versionLaunchJson( String file ) throws IOException, JsonSyntaxException {
+	public static _VersionLaunchJson versionLaunchJson( String file ) throws IOException, JsonSyntaxException {
 		FileReader versionLaunchJsonReader = new FileReader( filePath + file );
-		VersionLaunchJson versionLaunchJson = gsonObject.fromJson( versionLaunchJsonReader, VersionLaunchJson.class );
+		_VersionLaunchJson versionLaunchJson = gsonObject.fromJson( versionLaunchJsonReader, _VersionLaunchJson.class );
 		
 		versionLaunchJsonReader.close();
 		return versionLaunchJson;
 		
 	}
 	
-	public static VersionManifest versionManifest( String versionManifestDownload ) throws IOException, JsonSyntaxException {
-		VersionManifest versionManifest = gsonObject.fromJson( versionManifestDownload, VersionManifest.class );
+	public static _VersionManifest versionManifest( String versionManifestDownload ) throws IOException, JsonSyntaxException {
+		_VersionManifest versionManifest = gsonObject.fromJson( versionManifestDownload, _VersionManifest.class );
 		
 		return versionManifest;
 		
-	}
+	} */
 	
 }

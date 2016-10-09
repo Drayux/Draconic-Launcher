@@ -10,6 +10,9 @@ import javax.swing.*;
 import file.LauncherFile;
 import file.Settings;
 import json.AuthPayload;
+import json.AuthResponse;
+import json.AuthResponse.AvailableProfiles;
+import json.ParseFromJson;
 import json.ParseToJson;
 import util.AuthUtils;
 import util.SystemInfo;
@@ -196,9 +199,17 @@ public class LauncherGUI extends JFrame {
 				passwordField.setText( "" );
 				//Arrays.fill( passwordField.getPassword(), '0' );
 				
-				System.out.println( ParseToJson.authPayload( payload ) );
+				String postPayload = ParseToJson.authPayload( payload );
+				System.out.println( postPayload );
 				
-				System.out.println( AuthUtils.post( "authenticate", ParseToJson.authPayload( payload ) ) );
+				AuthUtils.Response postResponseString =  AuthUtils.post( "authenticate", postPayload );
+				System.out.println( postResponseString );
+				
+				AuthResponse response = ParseFromJson.authResponse( postResponseString.toString() );
+				for ( AuthResponse.AvailableProfiles item : response.availableProfiles ) {
+					System.out.println( item.id );
+					
+				}
 				
 			}
 			
@@ -454,7 +465,7 @@ public class LauncherGUI extends JFrame {
 			}
 			//Always called upon close, skipped on X because of System.exit(0);
 			public void windowClosed( WindowEvent e ) {
-				System.out.println( "Set game directory as: " + Settings.settings.gameDirectory );
+				System.out.println( "[Draconic Launcher][LauncherGUI][Info] Set game directory as: " + Settings.settings.gameDirectory );
 				
 				System.out.println( "[Draconic Launcher][LauncherGUI][Info] Saving settings..." );
 				try {
