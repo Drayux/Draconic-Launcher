@@ -31,16 +31,20 @@ public class Main {
 		System.out.println( "[Draconic Launcher][SystemInfo][Info] Launcher Directory: " + SystemInfo.getLauncherDir() );
 
 		//System.out.println( ParseToJson.authPayload( new AuthPayload( "testusr", new CharSequence[]{"h"} ) ) );
-		Profile prof = new Profile( "3kjlsdfj" );
-		try {
-			prof.read( prof.write() );
-		} catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
 		//Generates settings object from file
 		Settings.generate();
+		
+		//Profile initialization
+		//add it here! this stuff is testing:
+		Profile prof = new Profile( "3k3k" );
+		try {
+			prof.write();
+			prof.read();
+		} catch ( Exception e ) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		//Creates launcher GUI based off of the setting in gameDirectory
 		if ( Settings.settings.gameDirectory == null ) {

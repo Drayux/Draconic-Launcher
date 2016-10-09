@@ -1,8 +1,10 @@
 package file;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.Key;
@@ -39,10 +41,10 @@ public class Profile {
 		
 	}
 	
-	public String accessToken;
+	private String accessToken;
 	public String clientToken; //Client token user logged in with
 	public String id;
-	public String username;
+	public String username; //Make sure to update this at EVERY login
 	
 	public Profile( String id ) throws IOException {
 		this.path = SystemInfo.getLauncherDir() + SystemInfo.getSystemFileSeperator() + "profiles";
@@ -51,7 +53,27 @@ public class Profile {
 		
 	}
 
-	public byte[] write() throws IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+	public String read() throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException, IOException {
+		cipher.init( Cipher.DECRYPT_MODE, key);
+		
+		BufferedInputStream stream = new BufferedInputStream( new FileInputStream( this.filePath ) );
+		
+		//byte[] encryptedBytes = new byte[10];
+		byte nextByte;
+		while ( ( nextByte = (byte) stream.read() ) != -1 ) {
+			System.out.println( nextByte );
+			
+		}
+		
+		//byte[] profileBytes = cipher.doFinal( testbytes );
+		
+		//System.out.println( new String( profileBytes ) );
+		
+		return null;
+		
+	}
+	
+	public void write() throws IllegalBlockSizeException, BadPaddingException, InvalidKeyException, IOException {
 
 		cipher.init( Cipher.ENCRYPT_MODE, key );
 		
@@ -62,21 +84,24 @@ public class Profile {
 		System.out.println( new String( encryptedProfileBytes ) );
 		
 		//use FileOutputStream within a BufferedOutputStream to write the file
+		BufferedOutputStream stream = new BufferedOutputStream( new FileOutputStream( this.filePath ) );
 		
-		return encryptedProfileBytes; //change the return to void when finished testing
+		stream.write( encryptedProfileBytes );
+		stream.close();
 		
 	}
 	
-	public String read( byte[] testbytes ) throws FileNotFoundException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-		//BufferedInputStream reader = new BufferedInputStream( new FileInputStream( this.filePath ) );
+	//equivelant of settings.generate()
+	//checks for and verifys profile file; loads the current profile to the currentProfile profile; saves the loaded profile to the settings
+	public void create( String id ) {
+		//pseudo-verify file on profile, this is the check if it exists or not
+		//more stuff i haven't thought through yet
 		
-		cipher.init( Cipher.DECRYPT_MODE, key);
-		
-		byte[] profileBytes = cipher.doFinal( testbytes );
-		
-		System.out.println( new String( profileBytes ) );
-		
-		return null;
+	}
+	
+	public void update() {
+		//refresh login
+		//write any changes to the file
 		
 	}
 	

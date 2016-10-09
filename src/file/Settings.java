@@ -19,7 +19,9 @@ public class Settings extends LauncherFile {
 	//Anything NOT here WILL BE LOST upon update of the file
 	public String gameDirectory;
 	public Boolean stayLoggedIn;
+	public Boolean saveClientToken;
 	public String clientToken;
+	public String currentProfile;
 	
 	public Settings() throws IOException {
 		super( SystemInfo.getLauncherDir(), "settings" );
@@ -68,13 +70,20 @@ public class Settings extends LauncherFile {
 		}
 		//Client Token:
 		//if stayLoggedIn != true, reset this to null upon close of main window and invalidate authtoken
-		if ( clientToken == null ) {
+		if ( clientToken == null || reset ) {
 			ClientToken token = new ClientToken();
 			token.generateToken();
 			this.clientToken = token.token;
+			System.out.println( "[Draconic Launcher][Settings][Info] Generated new client token" );
 			
 		}
-		
+		//Nothing for the Current Profile : If nothing is saved, then no 'default' account is set (/last account used)
+		//Save Client Token:
+		if ( saveClientToken == null || reset ) {
+			this.saveClientToken = false;
+			System.out.println( "[Draconic Launcher][Settings][Info] Reset saveClientToken to default value" );
+			
+		}
 	}
 	
 	// Writes data of settings object (followed by this) to the settings file

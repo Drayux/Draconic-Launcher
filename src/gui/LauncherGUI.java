@@ -21,6 +21,7 @@ import util.SystemInfo;
  * Creates launcher window and GUI elements, called by ...actually, update this later... and put this thing on all the classes ;)
  */
 
+//ENTIRE CLASS TO BE REWRITTEN
 //not serialized, I know... I'll do that when I understand what it does
 public class LauncherGUI extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -255,6 +256,8 @@ public class LauncherGUI extends JFrame {
 			}
 			
 			public void windowClosed( WindowEvent e ) {
+				//Rewrite this! Accommodate for saveClientToken setting
+				System.out.println("CHANGE THE WINDOWCLOSED METHOD");
 				if ( Settings.settings.stayLoggedIn == false ) {
 					//beginning of try-catch
 					System.out.println( "[Draconic Launcher][LauncherGUI][Info] Invalidating session..." );

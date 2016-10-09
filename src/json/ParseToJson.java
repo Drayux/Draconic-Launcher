@@ -14,6 +14,7 @@ public class ParseToJson {
 	static {
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.setPrettyPrinting();
+		gsonBuilder.serializeNulls();
 		gsonObject = gsonBuilder.create();
 		
 	}

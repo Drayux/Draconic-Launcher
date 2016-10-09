@@ -40,9 +40,10 @@ public class LauncherFile {
 		verifyFile( this );
 		
 		FileWriter writer = new FileWriter( this.filePath );
-		writer.write( content );
 		
+		writer.write( content );
 		writer.close();
+		
 		System.out.println( "[Draconic Launcher][LauncherFile][Info] Successfully wrote to " + this.filePath );
 		
 	}
