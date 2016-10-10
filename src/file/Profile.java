@@ -3,35 +3,36 @@ package file;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
+import com.google.gson.JsonSyntaxException;
 
+import json.AuthResponse;
+import json.ParseFromJson;
 import json.ParseToJson;
+import json.RefreshPayload;
+import util.AuthUtils;
 import util.SystemInfo;
 
-public class Profile {
+public class Profile extends LauncherFile {
 
 	public static transient Profile currentProfile;
 	
-	public transient String path;
-	public transient String filePath;
 	private static transient Cipher cipher;
 	private static transient Key key;
 	
 	static {
 		try {
 			cipher = Cipher.getInstance( "AES" );
-			key =  KeyGenerator.getInstance( "AES" ).generateKey();
+			key = KeyGenerator.getInstance( "AES" ).generateKey();
 			
 		} 
 		catch ( NoSuchAlgorithmException | NoSuchPaddingException exception ) {
@@ -41,68 +42,190 @@ public class Profile {
 		
 	}
 	
-	private String accessToken;
+	public String accessToken;
 	public String clientToken; //Client token user logged in with
 	public String id;
 	public String username; //Make sure to update this at EVERY login
 	
 	public Profile( String id ) throws IOException {
-		this.path = SystemInfo.getLauncherDir() + SystemInfo.getSystemFileSeperator() + "profiles";
-		this.id = id;
-		this.filePath = SystemInfo.getLauncherDir() + SystemInfo.getSystemFileSeperator() + "profiles" + SystemInfo.getSystemFileSeperator() + id + ".profile";
+		super( SystemInfo.getLauncherDir() + SystemInfo.getSystemFileSeperator() + "profiles", id, true );
 		
 	}
 
-	public String read() throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException, IOException {
-		cipher.init( Cipher.DECRYPT_MODE, key);
+	public static void generate() throws IOException {
+		currentProfile = new Profile( Settings.settings.lastProfile );
+		String profileString = Profile.currentProfile.read();
+		boolean profileComplete = false;
 		
-		BufferedInputStream stream = new BufferedInputStream( new FileInputStream( this.filePath ) );
-		
-		//byte[] encryptedBytes = new byte[10];
-		byte nextByte;
-		while ( ( nextByte = (byte) stream.read() ) != -1 ) {
-			System.out.println( nextByte );
+		if ( profileString != null ) {
+			System.out.println( "[Draconic Launcher][Settings][Info] Loading profile " + currentProfile.username + " from file..." );
+			
+			try {
+				currentProfile = ParseFromJson.profile( profileString );
+				profileComplete = true;
+				
+			}
+			catch ( JsonSyntaxException exception ) {
+				currentProfile.reset();
+				
+			}
 			
 		}
 		
-		//byte[] profileBytes = cipher.doFinal( testbytes );
+		if ( Settings.settings.stayLoggedIn && profileComplete ) {
+			AuthUtils.post( "refresh", ParseToJson.refreshPayload( new RefreshPayload() ) );
+			
+		}
+		
+	}
+	
+	//Returns data saved in the profile file of the current profile
+	//Make sure not to call this if no profile is set (id = null)
+	public String read() throws IOException {
+		if ( this.id == null ) {
+			return null;
+			
+		}
+		
+		BufferedInputStream stream = null;
+		byte[] encryptedProfileBytes = null;
+		byte[] profileBytes = null;
+		
+		try {
+			stream = new BufferedInputStream( new FileInputStream( this.filePath ) );
+			encryptedProfileBytes = new byte[stream.available()];
+			
+			for ( int i = 0; i < encryptedProfileBytes.length; i++ ) {
+				encryptedProfileBytes[i] = (byte) stream.read();
+				
+			}
+			
+		}
+		catch ( IOException exception ) {
+			System.out.println( "[Draconic Launcher][Profile][Warn] Failed to read profile file" );
+			exception.printStackTrace();
+			
+		}
+		finally {
+			if ( stream != null ) {
+				//using this format because all these error calls drive me insane... if it just doesn't work, then let it not work! xD
+				//try { stream.close(); } catch ( Exception exception ) { exception.printStackTrace(); System.exit( -1 ); }
+				stream.close();
+				
+			}
+			else {
+				System.out.println( "[Draconic Launcher][Profile][Info] Deleting profile: " + this.id + "..." );
+				this.reset();
+				return null;
+				
+			}
+			
+		}
+		
+		try {
+			cipher.init( Cipher.DECRYPT_MODE, key );
+			
+			profileBytes = cipher.doFinal( encryptedProfileBytes );
+			//System.out.println( new String( profileBytes ) );
+			
+			return new String( profileBytes );
+			
+		}
+		catch ( InvalidKeyException | BadPaddingException | IllegalBlockSizeException exception ) {
+			System.out.println( "[Draconic Launcher][Profile][Warn] Failed to decrypt " + this.id + ".profile" );
+			exception.printStackTrace();
+			return null;
+			
+		}
+		
+	}
+	
+	//Writes data of currentProfile object to file
+	//Make sure not to call this if no profile is set (id = null)
+	public void write() throws IOException {
+		if ( this.id == null ) {
+			return;
+			
+		}
+		
+		BufferedOutputStream stream = null;
+		byte[] encryptedProfileBytes = null;
+		byte[] profileBytes = null;
+		
+		try { 
+			cipher.init( Cipher.ENCRYPT_MODE, key );
+			
+			profileBytes = ParseToJson.profile( this ).getBytes();
+			encryptedProfileBytes = cipher.doFinal( profileBytes );
+			
+		} 
+		catch ( InvalidKeyException | IllegalBlockSizeException | BadPaddingException exception ) {
+			System.out.println( "[Draconic Launcher][Profile][Warn] Failed to encrypt " + this.id + ".profile" );
+			exception.printStackTrace();
+			return;
+			
+		}
 		
 		//System.out.println( new String( profileBytes ) );
+		//System.out.println( new String( encryptedProfileBytes ) );
 		
-		return null;
+		try {
+			//use FileOutputStream within a BufferedOutputStream to write the file
+			stream = new BufferedOutputStream( new FileOutputStream( this.filePath ) );
+			
+			System.out.println( "[Draconic Launcher][Profile][Info] Saving " + this.id + ".profile..." );
+			stream.write( encryptedProfileBytes );
+			stream.close();
+		
+		}
+		catch ( IOException exception ) {
+			System.out.println( "[Draconic Launcher][Profile][Warn] Failed to write profile file" );
+			exception.printStackTrace();
+			
+		}
+		finally {
+			if ( stream != null ) {
+				//try { stream.close(); } catch ( Exception exception ) { exception.printStackTrace(); System.exit( -1 ); }
+				stream.close();
+				System.out.println( "[Draconic Launcher][Profile][Info] Successfully wrote to " + this.id + ".profile" );
+				
+			}
+			else {
+				System.out.println( "[Draconic Launcher][Profile][Info] Deleting profile: " + this.id + "..." );
+				this.reset();
+				
+			}
+			
+		}
 		
 	}
 	
-	public void write() throws IllegalBlockSizeException, BadPaddingException, InvalidKeyException, IOException {
-
-		cipher.init( Cipher.ENCRYPT_MODE, key );
+	//Equivalent of settings.generate()
+	//checks for and verifies profile file; loads the current profile to the currentProfile profile; saves the loaded profile to the settings
+	public static void create( AuthResponse response ) throws IOException {
+		verifyFile( new Profile( response.selectedProfile.id ) );
 		
-		byte[] profileBytes = ParseToJson.profile( this ).getBytes();
-		byte[] encryptedProfileBytes = cipher.doFinal( profileBytes );
-		
-		System.out.println( new String( profileBytes ) );
-		System.out.println( new String( encryptedProfileBytes ) );
-		
-		//use FileOutputStream within a BufferedOutputStream to write the file
-		BufferedOutputStream stream = new BufferedOutputStream( new FileOutputStream( this.filePath ) );
-		
-		stream.write( encryptedProfileBytes );
-		stream.close();
+		//appends the values from the login to the 
+		currentProfile.update( response );
+		currentProfile.write();
 		
 	}
 	
-	//equivelant of settings.generate()
-	//checks for and verifys profile file; loads the current profile to the currentProfile profile; saves the loaded profile to the settings
-	public void create( String id ) {
-		//pseudo-verify file on profile, this is the check if it exists or not
-		//more stuff i haven't thought through yet
+	public void update( AuthResponse response ) {
+		currentProfile.id = response.selectedProfile.id;
+		currentProfile.username = response.selectedProfile.name;
+		currentProfile.accessToken = response.accessToken;
+		currentProfile.clientToken = response.clientToken;
 		
 	}
 	
-	public void update() {
-		//refresh login
-		//write any changes to the file
+	/* Don't think I'm going to use this
+	public void reset() {
+		currentProfile.id = null;
+		currentProfile.username = null;
+		currentProfile.accessToken = null;
+		currentProfile.clientToken = null;
 		
-	}
+	} */
 	
 }

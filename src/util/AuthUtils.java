@@ -16,8 +16,8 @@ public class AuthUtils {
 	
 	public static class Response {
 		
-		String response;
-		int responseCode;
+		public String response;
+		public int responseCode;
 		
 		public Response( String response, int responseCode ) {
 			this.response = response;
@@ -30,15 +30,104 @@ public class AuthUtils {
 			
 		}
 		
+		public int getCode() {
+			return this.responseCode;
+			
+		}
+		
 	}
 	
-	public static Response post( String endpoint, String payload ) {
-		return new Response("test", 0);
+	public static Response post( String endpoint, String payload ) throws IOException {
+		HttpsURLConnection connection = null;
+		OutputStream requestStream = null;
+		InputStreamReader responseStream = null;
+		BufferedReader reader = null;
+		String responseString = null;
+		int responseCode = 0;
+		
+		//Maybe need to add separate catch for not being able to resolve the hostname/other reasons for a failed connection
+		try {
+			URL authServer = new URL( "https://authserver.mojang.com/" + endpoint );
+			connection = (HttpsURLConnection) authServer.openConnection();
+			
+			connection.setRequestMethod( "POST" );
+			connection.setRequestProperty( "Content-Type", "application/json" );
+			connection.setDoOutput( true );
+			
+			requestStream = connection.getOutputStream();
+			requestStream.write( payload.getBytes( "UTF-8" ) );
+			
+			responseCode = connection.getResponseCode();
+			System.out.println(responseCode);
+			System.out.println( new String( payload.getBytes( "UTF-8" ) ) );
+			
+		} 
+		catch ( IOException exception ) {
+			System.out.println( "[Draconic Launcher][AuthUtils][Warn] Failed to generate post request" );
+			exception.printStackTrace();
+			
+		}
+		finally {
+			if ( requestStream != null ) {
+				requestStream.close();
+				
+			}
+			else {
+				if ( connection != null ) {
+					connection.disconnect();
+					
+				}
+				
+				return new Response( null, 0 );
+				
+			}
+			
+		}
+		
+		try {
+			if ( responseCode == 200 ) {
+				responseStream = new InputStreamReader( connection.getInputStream() );
+				
+			}
+			else {
+				responseStream = new InputStreamReader( connection.getErrorStream() );
+				
+			}
+			
+			reader = new BufferedReader( responseStream );
+			
+			responseString = reader.readLine();
+			
+		}
+		catch ( IOException exception ) {
+			System.out.println( "[Draconic Launcher][AuthUtils][Warn] Failed to read authorization response" );
+			exception.printStackTrace();
+			
+		}
+		finally {
+			if ( reader != null ) {
+				reader.close();
+				
+			}
+			else {
+				if ( responseStream != null ) {
+					responseStream.close();
+					
+				}
+				
+				return new Response( null, 0 );
+				
+			}
+			
+		}
+		
+		return new Response( responseString, responseCode );
 		
 	}
 	
 	//Used to interact with the authorization server
 	//Post requests allow user to login and logout
+	/* Depricated
 	public static String _post( String endpoint, String payload ) {
 		String response;
 		HttpsURLConnection authserverConnection;
@@ -102,10 +191,10 @@ public class AuthUtils {
 			
 		}
 		
-	}
+	} */
 	
-	public static String get( String url ) {
-		return "finish this!";
+	public static Response get( String url ) {
+		return null;
 		
 	}
 	

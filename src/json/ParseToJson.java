@@ -51,4 +51,9 @@ public class ParseToJson {
 		
 	}
 	
+	public static String refreshPayload( RefreshPayload refreshPayloadObject ) {
+		return gsonObject.toJson( refreshPayloadObject );
+		
+	}
+	
 }

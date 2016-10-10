@@ -1,5 +1,6 @@
 package json;
 
+import file.Profile;
 import file.Settings;
 
 /*
@@ -10,8 +11,8 @@ import file.Settings;
 @SuppressWarnings( "unused" )
 public class RefreshPayload {
 
-	private String accessToken; //this will be initialized with the saved accesstoken in the userprofile file
-	private String clientToken = Settings.settings.clientToken;
+	private String accessToken = Profile.currentProfile.accessToken;
+	private String clientToken = Profile.currentProfile.clientToken;
 	private boolean requestUser;
 	
 	//Makes auth server return an error

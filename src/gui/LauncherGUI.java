@@ -8,10 +8,12 @@ import java.util.Arrays;
 import javax.swing.*;
 
 import file.LauncherFile;
+import file.Profile;
 import file.Settings;
 import json.AuthPayload;
 import json.AuthResponse;
 import json.AuthResponse.AvailableProfiles;
+import json.ErrorResponse;
 import json.ParseFromJson;
 import json.ParseToJson;
 import util.AuthUtils;
@@ -203,14 +205,53 @@ public class LauncherGUI extends JFrame {
 				String postPayload = ParseToJson.authPayload( payload );
 				System.out.println( postPayload );
 				
-				AuthUtils.Response postResponseString =  AuthUtils.post( "authenticate", postPayload );
-				System.out.println( postResponseString );
+				AuthUtils.Response postResponse = new AuthUtils.Response( null, 0 );
 				
+				try {
+					postResponse = AuthUtils.post( "authenticate", postPayload );
+					
+				} 
+				catch ( IOException exception ) {
+					exception.printStackTrace();
+					
+				}
+				
+				//System.out.println( postResponse );
+				
+				if ( postResponse.getCode() == 200 ) {
+					AuthResponse response = ParseFromJson.authResponse( postResponse.toString() );
+					Profile.currentProfile.update( response );
+					
+					System.out.println( "[Draconic Launcher][LauncherGUI][Info] Successfully logged in! Welcome, " + response.selectedProfile.name );
+					
+					try {
+						Profile.currentProfile.write();
+						
+						Settings.settings.lastProfile = response.selectedProfile.id;
+						Settings.settings.write( false );
+						
+					} 
+					catch ( IOException exception ) {
+						exception.printStackTrace();
+						
+					}
+					
+				}
+				else if ( postResponse.getCode() == 403 ) {
+					ErrorResponse response = ParseFromJson.errorResponse( postResponse.toString() );
+					
+					System.out.println( "[Draconic Launcher][LauncherGUI][Info] Failed to log in with error code: " + response.error + " | " + response.errorMessage );
+					
+				}
+				
+				//System.out.println( postResponseString );
+				
+				/* Testing 
 				AuthResponse response = ParseFromJson.authResponse( postResponseString.toString() );
 				for ( AuthResponse.AvailableProfiles item : response.availableProfiles ) {
 					System.out.println( item.id );
 					
-				}
+				} */
 				
 			}
 			

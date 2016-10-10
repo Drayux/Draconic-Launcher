@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
+import file.Profile;
 import file.Settings;
 import util.SystemInfo;
 
@@ -35,9 +36,12 @@ public class ParseFromJson {
 	
 	//DOWNLOADS
 	public static AuthResponse authResponse( String response ) {
-		AuthResponse authResponse = gsonObject.fromJson( response, AuthResponse.class );
+		return gsonObject.fromJson( response, AuthResponse.class );
 		
-		return authResponse;
+	}
+	
+	public static ErrorResponse errorResponse( String response ) {
+		return gsonObject.fromJson( response, ErrorResponse.class );
 		
 	}
 	
@@ -48,6 +52,11 @@ public class ParseFromJson {
 		
 		settingsReader.close();
 		return settings;
+		
+	}
+	
+	public static Profile profile( String profileString ) throws IOException, JsonSyntaxException {
+		return gsonObject.fromJson( profileString, Profile.class );
 		
 	}
 	

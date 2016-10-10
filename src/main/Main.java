@@ -1,16 +1,11 @@
 package main;
 
 import java.io.IOException;
-import java.security.InvalidKeyException;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-
+import file.LauncherFile;
 import file.Profile;
 import file.Settings;
 import gui.LauncherGUI;
-//import json.AuthPayload;
-//import json.ParseToJson;
 import util.SystemInfo;
 
 /*
@@ -34,24 +29,14 @@ public class Main {
 		
 		//Generates settings object from file
 		Settings.generate();
-		
 		//Profile initialization
-		//add it here! this stuff is testing:
-		Profile prof = new Profile( "3k3k" );
-		try {
-			prof.write();
-			prof.read();
-		} catch ( Exception e ) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Profile.generate();
 		
 		//Creates launcher GUI based off of the setting in gameDirectory
-		if ( Settings.settings.gameDirectory == null ) {
+		if ( Settings.settings.gameDirectory == null || !LauncherFile.verifyDirectoryPermissions( Settings.settings.gameDirectory ) ) {
 			LauncherGUI.createGameDirectoryPrompt();
 			
 		}
-		//add something to check the permissions of the game directory at launch
 		else {
 			LauncherGUI.createMainGUI( "Draconic Modpack Launcher" );
 			

@@ -14,6 +14,7 @@ public class AuthResponse {
 	public SelectedProfile selectedProfile;
 	public User user;
 	
+	//Mojang profiles have to do with available accounts registered within an email--this is currently not implemented
 	public static class AvailableProfiles {
 		
 		public String id;

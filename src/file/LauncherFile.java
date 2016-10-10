@@ -14,11 +14,13 @@ public class LauncherFile {
 	public transient String path;
 	public transient String name;
 	public transient String filePath;
+	public transient boolean isProfile;
 	
-	public LauncherFile( String path, String name ) throws IOException {
+	public LauncherFile( String path, String name, boolean isProfile ) throws IOException {
 		this.path = path;
 		this.name = name;
-		this.filePath = path + SystemInfo.getSystemFileSeperator() + name + ".json";
+		this.isProfile = isProfile;
+		this.filePath = isProfile ? path + SystemInfo.getSystemFileSeperator() + name + ".profile" : path + SystemInfo.getSystemFileSeperator() + name + ".json";
 		
 		//verifyFile( this );
 		
@@ -26,11 +28,24 @@ public class LauncherFile {
 	
 	//Writes an empty dictionary ( {} ) to the file
 	public void reset() throws IOException {
-		FileWriter writer = new FileWriter( this.filePath );
-		writer.write( "{}" );
-		
-		writer.close();
-		System.out.println( "[Draconic Launcher][LauncherFile][Info] Successfully reset " + this.filePath );
+		if ( !this.isProfile ) {
+			FileWriter writer = new FileWriter( this.filePath );
+			writer.write( "{}" );
+			
+			writer.close();
+			System.out.println( "[Draconic Launcher][LauncherFile][Info] Successfully reset " + this.filePath );
+			
+		}
+		else {
+			File profileFile = new File( this.filePath );
+			if ( profileFile.exists() ) {
+				profileFile.delete();
+				
+			}
+			
+			Profile.currentProfile = new Profile( null );
+			
+		}
 		
 	}
 	
@@ -67,6 +82,7 @@ public class LauncherFile {
 		
 	}
 	
+	//This method pretty much only used when setting the game directory
 	public static boolean verifyDirectoryPermissions( String path ) {
 		File directoryPath = new File( path );
 		File tempFile = new File( path + SystemInfo.getSystemFileSeperator() + "TEMP" );
@@ -114,7 +130,7 @@ public class LauncherFile {
 	//Checks for existence, completeness, and syntax of file in question
 	//Ensures file is valid
 	public static boolean verifyFile( LauncherFile file ) throws IOException {
-		System.out.println( "[Draconic Launcher][LauncherFile][Info] Verifying " + file.name + ".json..." );
+		System.out.println( "[Draconic Launcher][LauncherFile][Info] Verifying " + file.name + ( file.isProfile ? ".profile..." : ".json..." ) );
 		
 		File launcherFile = new File( file.filePath );
 		boolean fileValid = true;
@@ -135,7 +151,7 @@ public class LauncherFile {
 		//Permissions check not fully necessary in this field
 		//Still good to check tho
 		if ( !file.verifyFilePermissions() ) {
-			System.out.println( "[Draconic Launcher][LauncherFile][Info] Launcher does not have write permissions for " + file.name + ".json." );
+			System.out.println( "[Draconic Launcher][LauncherFile][Info] Launcher does not have write permissions for " + file.name + ( file.isProfile ? ".profile..." : ".json..." ) );
 			
 			if ( file.path == SystemInfo.getLauncherDir() ) {
 				//change this to some sort of warning eventually
@@ -152,7 +168,8 @@ public class LauncherFile {
 		}
 		
 		boolean isEmpty = file.isEmpty();
-		if ( isEmpty || !ParseFromJson.verifySyntax( file.filePath ) ) {
+		boolean validJsonSyntax = ParseFromJson.verifySyntax( file.filePath );
+		if ( isEmpty || ( !validJsonSyntax && !file.isProfile ) ) {
 			System.out.println( "[Draconic Launcher][LauncherFile][Info] " + file.filePath + ( isEmpty ? " is empty" : "has invalid JSON syntax" ) );
 			file.reset();
 			fileValid = false;
