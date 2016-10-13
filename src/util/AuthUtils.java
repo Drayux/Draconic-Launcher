@@ -5,7 +5,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLHandshakeException;
+
+import java.net.SocketException;
 import java.net.URL;
+import java.net.UnknownHostException;
 
 /*
  * Utility class for making requests to Mojang servers
@@ -42,10 +46,11 @@ public class AuthUtils {
 		OutputStream requestStream = null;
 		InputStreamReader responseStream = null;
 		BufferedReader reader = null;
+		
 		String responseString = null;
 		int responseCode = 0;
+		boolean errorCalled = false;
 		
-		//Maybe need to add separate catch for not being able to resolve the hostname/other reasons for a failed connection
 		try {
 			URL authServer = new URL( "https://authserver.mojang.com/" + endpoint );
 			connection = (HttpsURLConnection) authServer.openConnection();
@@ -58,27 +63,60 @@ public class AuthUtils {
 			requestStream.write( payload.getBytes( "UTF-8" ) );
 			
 			responseCode = connection.getResponseCode();
-			System.out.println(responseCode);
-			System.out.println( new String( payload.getBytes( "UTF-8" ) ) );
+			//System.out.println(responseCode);
+			//System.out.println( new String( payload.getBytes( "UTF-8" ) ) );
 			
-		} 
+		}
+		/*catch ( SocketException exception ) {
+			errorCalled = true;
+
+			return new Response( "{"
+					+ "\"error\":\"SocketException\","
+					+ "\"errorMessage\":\"Network is unreachable\""
+					+ "}", 0 );
+			
+		}
+		catch ( UnknownHostException exception ) {
+			errorCalled = true;
+
+			return new Response( "{"
+					+ "\"error\":\"UnknownHostException\","
+					+ "\"errorMessage\":\"Unable to resolve authserver hostname\""
+					+ "}", 0 );
+			
+		}
+		catch ( SSLHandshakeException exception ) {
+			errorCalled = true;
+
+			return new Response( "{"
+					+ "\"error\":\"SSLHandshakeException\","
+					+ "\"errorMessage\":\"Failed to establish a secure SSL connection\""
+					+ "}", 0 );
+			
+		}*/
 		catch ( IOException exception ) {
-			System.out.println( "[Draconic Launcher][AuthUtils][Warn] Failed to generate post request" );
-			exception.printStackTrace();
+			errorCalled = true;
+			//exception.printStackTrace();
+			
+			return new Response( "{"
+					+ "\"error\":\"" + exception + "\","
+					+ "\"errorMessage\":\"" + exception.getMessage() + "\""
+					+ "}", 0 );
 			
 		}
 		finally {
+			if ( errorCalled ) {
+				System.out.println( "[Draconic Launcher][AuthUtils][Warn] Failed to generate post request" );
+				
+			}
+			
 			if ( requestStream != null ) {
 				requestStream.close();
 				
 			}
-			else {
-				if ( connection != null ) {
-					connection.disconnect();
-					
-				}
-				
-				return new Response( null, 0 );
+			
+			if ( connection != null && errorCalled ) {
+				connection.disconnect();
 				
 			}
 			
@@ -103,19 +141,19 @@ public class AuthUtils {
 			System.out.println( "[Draconic Launcher][AuthUtils][Warn] Failed to read authorization response" );
 			exception.printStackTrace();
 			
+			return new Response( "{"
+					+ "\"error\":\"" + exception + "\""
+					+ "}", 0 );
+			
 		}
 		finally {
 			if ( reader != null ) {
 				reader.close();
 				
 			}
-			else {
-				if ( responseStream != null ) {
-					responseStream.close();
-					
-				}
-				
-				return new Response( null, 0 );
+			
+			if ( responseStream != null ) {
+				responseStream.close();
 				
 			}
 			

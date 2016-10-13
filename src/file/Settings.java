@@ -20,6 +20,7 @@ public class Settings extends LauncherFile {
 	public String gameDirectory;
 	public String clientToken;
 	public String lastProfile;
+	public int length = 0;
 	public boolean saveClientToken = false;
 	public boolean stayLoggedIn = false;
 	
@@ -37,14 +38,19 @@ public class Settings extends LauncherFile {
 		//think of this line as the "settings loader"
 		settings = ParseFromJson.settings();
 		
-		settings.updateDefaultValues( false );
-		settings.write( false );
+		if ( settings.updateDefaultValues( false ) ) {
+			settings.write( false );
+			
+		}
 		
 	}
 	
 	//This method checks for all setting values in the settings.json file
 	//If a value is null, it's default setting will be applied (used for generating the settings file upon deletion or on first launch)
-	public void updateDefaultValues( boolean reset ) {
+	public boolean updateDefaultValues( boolean reset ) {
+		//This boolean returns true if any values were changed; This is used so that no extra settings writes are called
+		boolean settingChanged = false;
+		
 		//Game Directory / Last Used Profile / Save Generated Client Token / Stay Logged In:
 		if ( reset ) {
 			this.gameDirectory = null;
@@ -56,6 +62,8 @@ public class Settings extends LauncherFile {
 			System.out.println( "[Draconic Launcher][Settings][Info] Reset lastProfile to default value" );
 			System.out.println( "[Draconic Launcher][Settings][Info] saveClientToken to default value" );
 			System.out.println( "[Draconic Launcher][Settings][Info] Reset stayLoggedIn to default value" );
+			
+			settingChanged = true;
 			
 		}
 		//Client Token:
@@ -79,6 +87,8 @@ public class Settings extends LauncherFile {
 			System.out.println( "[Draconic Launcher][Settings][Info] Reset stayLoggedIn to default value" );
 			
 		}*/
+		
+		return settingChanged;
 		
 	}
 	

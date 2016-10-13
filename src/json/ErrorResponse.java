@@ -11,4 +11,11 @@ public class ErrorResponse {
 	public String errorMessage;
 	public String cause;
 	
+	/* Don't know if this is going to be used ever
+	public ErrorResponse( String error, String cause ) {
+		this.error = error;
+		this.cause = cause;
+		
+	}*/
+	
 }

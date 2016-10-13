@@ -12,7 +12,7 @@ import file.Profile;
 import file.Settings;
 import json.AuthPayload;
 import json.AuthResponse;
-import json.AuthResponse.AvailableProfiles;
+//import json.AuthResponse.AvailableProfiles;
 import json.ErrorResponse;
 import json.ParseFromJson;
 import json.ParseToJson;
@@ -203,7 +203,7 @@ public class LauncherGUI extends JFrame {
 				//Arrays.fill( passwordField.getPassword(), '0' );
 				
 				String postPayload = ParseToJson.authPayload( payload );
-				System.out.println( postPayload );
+				//System.out.println( postPayload );
 				
 				AuthUtils.Response postResponse = new AuthUtils.Response( null, 0 );
 				
@@ -215,7 +215,6 @@ public class LauncherGUI extends JFrame {
 					exception.printStackTrace();
 					
 				}
-				
 				//System.out.println( postResponse );
 				
 				if ( postResponse.getCode() == 200 ) {
@@ -227,8 +226,13 @@ public class LauncherGUI extends JFrame {
 					try {
 						Profile.currentProfile.write();
 						
-						Settings.settings.lastProfile = response.selectedProfile.id;
-						Settings.settings.write( false );
+						if ( Settings.settings.lastProfile != response.selectedProfile.id ) {
+							System.out.println( "[Draconic Launcher][Profile][Info] Set current profile to: " + response.selectedProfile.id );
+						
+							Settings.settings.lastProfile = response.selectedProfile.id;
+							Settings.settings.write( false );
+							
+						}
 						
 					} 
 					catch ( IOException exception ) {
@@ -237,12 +241,18 @@ public class LauncherGUI extends JFrame {
 					}
 					
 				}
-				else if ( postResponse.getCode() == 403 ) {
+				else /*if ( postResponse.getCode() == 403 )*/ {
 					ErrorResponse response = ParseFromJson.errorResponse( postResponse.toString() );
 					
 					System.out.println( "[Draconic Launcher][LauncherGUI][Info] Failed to log in with error code: " + response.error + " | " + response.errorMessage );
 					
 				}
+				/*else if ( postResponse.getCode() == 0 ) {
+					ErrorResponse response = ParseFromJson.errorResponse( postResponse.toString() );
+					
+					//System.out.println( "[Draconic Launcher][LauncherGUI][Info] Launcher failed to connect: " + response.error + " | " + response.errorMessage );
+					
+				}*/
 				
 				//System.out.println( postResponseString );
 				
