@@ -19,29 +19,47 @@ public class Settings extends LauncherFile {
 	//Anything NOT here WILL BE LOST upon update of the file
 	public String gameDirectory;
 	public String clientToken;
-	public String lastProfile;
-	public int length = 0;
-	public boolean saveClientToken = false;
+	//public String currentProfile;
+	public int currentProfileIndex = 0;
+	public Profiles[] profiles = new Profiles[0];
+	//public boolean saveClientToken = false;
 	public boolean stayLoggedIn = false;
+	public float scalingFactor = 1;
 	
 	public Settings() throws IOException {
 		super( SystemInfo.getLauncherDir(), "settings", false );
 
 	}
 	
+	public static class Profiles {
+		
+		public String id;
+		public String username;
+		
+		public Profiles( String id, String username ) {
+			this.id = id;
+			this.username = username;
+			
+		}
+		
+	}
+	
 	//Attempts to create settings object from file; Creates a new settings object if not
 	//Updates all missing entries and 'saves' the object to the file
-	public static void generate() throws IOException {
+	public static final void generate() throws IOException {
 		verifyFile( new Settings() );
 		System.out.println( "[Draconic Launcher][Settings][Info] Loading settings from file..." );
 		
 		//think of this line as the "settings loader"
 		settings = ParseFromJson.settings();
 		
-		if ( settings.updateDefaultValues( false ) ) {
+		/*if ( settings.updateDefaultValues( false ) ) {
 			settings.write( false );
 			
-		}
+		}*/
+		
+		//Settings will instead be saved on the creation of the main launcher window
+		settings.updateDefaultValues( false );
 		
 	}
 	
@@ -54,14 +72,19 @@ public class Settings extends LauncherFile {
 		//Game Directory / Last Used Profile / Save Generated Client Token / Stay Logged In:
 		if ( reset ) {
 			this.gameDirectory = null;
-			this.lastProfile = null;
-			this.saveClientToken = false;
+			//this.currentProfile = null;
+			this.currentProfileIndex = 0;
+			this.profiles = new Profiles[0];
+			//this.saveClientToken = false;
 			this.stayLoggedIn = false;
+			this.scalingFactor = 1;
 			
 			System.out.println( "[Draconic Launcher][Settings][Info] Reset gameDirectory to default value" );
 			System.out.println( "[Draconic Launcher][Settings][Info] Reset lastProfile to default value" );
-			System.out.println( "[Draconic Launcher][Settings][Info] saveClientToken to default value" );
+			//System.out.println( "[Draconic Launcher][Settings][Info] Reset saveClientToken to default value" );
 			System.out.println( "[Draconic Launcher][Settings][Info] Reset stayLoggedIn to default value" );
+			System.out.println( "[Draconic Launcher][Settings][Info] Reset scalingFactor to 1" );
+			System.out.println( "[Draconic Launcher][Settings][Info] Deleted all profile entries" );
 			
 			settingChanged = true;
 			
@@ -74,6 +97,8 @@ public class Settings extends LauncherFile {
 			this.clientToken = token.token;
 			
 		}
+		//Profiles List:
+		//if (  )
 		/* Unnecessary code
 		//Save Client Token:
 		if ( saveClientToken == null || reset ) {
@@ -93,19 +118,52 @@ public class Settings extends LauncherFile {
 	}
 	
 	// Writes data of settings object (followed by this) to the settings file
-	public void write( boolean verify ) throws IOException {
-		// This check is not actually necessary as the file will be overwritten.
-		//I had it here thinking it was a good idea, but the only time the file integrity really matters is on its load
-		if ( verify ) {
-			verifyFile( this );
+	public void write( boolean verify ) {
+		FileWriter settingsWriter = null;
+		
+		try {
+			if ( verify ) {
+				verifyFile( this );
+				
+			}
+			
+			settingsWriter = new FileWriter( this.filePath );
+			settingsWriter.write( ParseToJson.settings( this ) );
+			
+			System.out.println( "[Draconic Launcher][Settings][Info] Successfully wrote to settings file" );
+			
+		}
+		catch ( IOException exception ) {
+			System.out.println( "[Draconic Launcher][Settings][Warn] Failed to write to settings file" );
+			
+		}
+		finally {
+			try {
+				if ( settingsWriter != null ) {
+					settingsWriter.close();
+					
+				}
+				
+			}
+			catch ( Exception exception ) {
+				exception.printStackTrace();
+				System.exit( 100 );
+				
+			}
 			
 		}
 		
-		FileWriter settingsWriter = new FileWriter( this.filePath );
-		settingsWriter.write( ParseToJson.settings( this ) );
-		
-		settingsWriter.close();
-		System.out.println( "[Draconic Launcher][Settings][Info] Successfully wrote to settings file" );
+	}
+	
+	public static float getScalingFactor() {
+		try {
+			return settings.scalingFactor;
+			
+		}
+		catch ( NullPointerException exception ) {
+			return 1;
+			
+		}
 		
 	}
 	

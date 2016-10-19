@@ -25,7 +25,7 @@ import util.SystemInfo;
 
 //ENTIRE CLASS TO BE REWRITTEN
 //not serialized, I know... I'll do that when I understand what it does
-public class LauncherGUI extends JFrame {
+public class _LauncherGUI extends JFrame {
 	private static final long serialVersionUID = 1L;
 	
 	static int WIDTH;
@@ -34,7 +34,7 @@ public class LauncherGUI extends JFrame {
 	private AuthPayload payload;
 	private static String gameDirectory = SystemInfo.getLauncherDir();
 	
-	private LauncherGUI( String title ) {
+	private _LauncherGUI( String title ) {
 		super( title );
 		
 	}
@@ -61,7 +61,7 @@ public class LauncherGUI extends JFrame {
 
 		//FRAMES
 		//JFrame launcherWindow = new JFrame( title );
-		LauncherGUI launcherWindow = new LauncherGUI( title );
+		_LauncherGUI launcherWindow = new _LauncherGUI( title );
 
 		//PANELS
 		JPanel login = new JPanel();
@@ -226,13 +226,13 @@ public class LauncherGUI extends JFrame {
 					try {
 						Profile.currentProfile.write();
 						
-						if ( Settings.settings.lastProfile != response.selectedProfile.id ) {
+						/*if ( Settings.settings.currentProfileIndex != response.selectedProfile.id ) {
 							System.out.println( "[Draconic Launcher][Profile][Info] Set current profile to: " + response.selectedProfile.id );
 						
 							Settings.settings.lastProfile = response.selectedProfile.id;
 							Settings.settings.write( false );
 							
-						}
+						}*/
 						
 					} 
 					catch ( IOException exception ) {
@@ -323,14 +323,7 @@ public class LauncherGUI extends JFrame {
 				}
 				
 				System.out.println( "[Draconic Launcher][LauncherGUI][Info] Saving settings..." );
-				try {
-					Settings.settings.write( false );
-					
-				} 
-				catch ( IOException exception ) {
-					exception.printStackTrace();
-					
-				}
+				Settings.settings.write( false );
 				//System.out.println( "[Draconic Launcher][LauncherGUI][Info] Settings saved" );
 				
 				System.out.println( "[Draconic Launcher][LauncherGUI][Info] Closing launcher..." );
@@ -370,12 +363,12 @@ public class LauncherGUI extends JFrame {
 	public static void createGameDirectoryPrompt() {
 		System.out.println( "[Draconic Launcher][LauncherGUI][Info] Generating game directory prompt..." );
 		
-		LauncherGUI gameDirectoryPrompt = new LauncherGUI( "Game Directory" );
+		_LauncherGUI gameDirectoryPrompt = new _LauncherGUI( "Game Directory" );
 		
 		JLabel enterGameDirectory = new JLabel();
 		enterGameDirectory.setText( "Enter the game install directory:" );
 		
-		JTextField directoryPrompt = new JTextField( gameDirectory );
+		JTextField directoryPrompt = new JTextField( SystemInfo.getLauncherDir() );
 		directoryPrompt.setFont( directoryPrompt.getFont().deriveFont( Font.PLAIN, 14f ) );
 		directoryPrompt.setColumns( 36 );
 		//directoryPrompt.setBounds( 25, 96, 500, 32);
@@ -432,14 +425,11 @@ public class LauncherGUI extends JFrame {
 			
 		});
 		
-		JLabel separator = new JLabel();
-		separator.setText( null );
+		/*JLabel separator = new JLabel();
+		separator.setText( null );*/
 		
 		//launcherWindow.setIconImage(image);
-		gameDirectoryPrompt.setSize( 550, 250 );
-		gameDirectoryPrompt.setResizable( false );
-		gameDirectoryPrompt.setLocationRelativeTo( null );
-		gameDirectoryPrompt.setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
+		//gameDirectoryPrompt.setSize( 550, 250 );
 		
 		GroupLayout layout = new GroupLayout( gameDirectoryPrompt.getContentPane() );
 		gameDirectoryPrompt.getContentPane().setLayout( layout );
@@ -522,14 +512,7 @@ public class LauncherGUI extends JFrame {
 				System.out.println( "[Draconic Launcher][LauncherGUI][Info] Set game directory as: " + Settings.settings.gameDirectory );
 				
 				System.out.println( "[Draconic Launcher][LauncherGUI][Info] Saving settings..." );
-				try {
-					Settings.settings.write( false );
-					
-				} 
-				catch ( IOException exception ) {
-					exception.printStackTrace();
-					
-				}
+				Settings.settings.write( false );
 				//System.out.println( "[Draconic Launcher][LauncherGUI][Info] Settings saved" );
 				
 				createMainGUI( "Draconic Launcher" );
@@ -541,9 +524,13 @@ public class LauncherGUI extends JFrame {
 			public void windowDeactivated( WindowEvent e ) {}
 			});
 		
-		gameDirectoryPrompt.pack();
+		gameDirectoryPrompt.setResizable( false );
+		gameDirectoryPrompt.setLocationRelativeTo( null );
+		gameDirectoryPrompt.setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
 		gameDirectoryPrompt.setAlwaysOnTop( true );
 		gameDirectoryPrompt.getRootPane().setDefaultButton( accept );
+		
+		gameDirectoryPrompt.pack();
 		gameDirectoryPrompt.setVisible( true );
 		
 	}

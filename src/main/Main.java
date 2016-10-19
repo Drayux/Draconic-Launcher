@@ -5,7 +5,8 @@ import java.io.IOException;
 import file.LauncherFile;
 import file.Profile;
 import file.Settings;
-import gui.LauncherGUI;
+import gui.LaunchFrame;
+import gui.PromptFrame;
 import util.SystemInfo;
 
 /*
@@ -15,8 +16,12 @@ import util.SystemInfo;
 
 public class Main {
 	
+	public final static Thread promptFrame = new Thread( new PromptFrame() );
+	public final static Thread launchFrame = new Thread( new LaunchFrame() );
+	
 	public static void main( String...args ) throws IOException {
-
+		//MAJOR TODO: Finish threads!
+		
 		//The first thing the program does is that it gets information about the user's system so the appropriate configuration to launch the game can be used
 		//It is then shown here
 		System.out.println( "[Draconic Launcher][SystemInfo][Info] Current OS: " + SystemInfo.getSystemOS() );
@@ -30,15 +35,15 @@ public class Main {
 		//Generates settings object from file
 		Settings.generate();
 		//Profile initialization
-		Profile.generate();
+		//Profile.generate();
 		
 		//Creates launcher GUI based off of the setting in gameDirectory
 		if ( Settings.settings.gameDirectory == null || !LauncherFile.verifyDirectoryPermissions( Settings.settings.gameDirectory ) ) {
-			LauncherGUI.createGameDirectoryPrompt();
+			promptFrame.start(); //Prompt frame will start launchFrame upon closing instead
 			
 		}
 		else {
-			LauncherGUI.createMainGUI( "Draconic Modpack Launcher" );
+			launchFrame.start();
 			
 		}
 	

@@ -36,6 +36,7 @@ public class LauncherFile {
 			System.out.println( "[Draconic Launcher][LauncherFile][Info] Successfully reset " + this.filePath );
 			
 		}
+		//Note: This will not 'fully' reset the file, only delete it. The profile must also be recreated as a new object
 		else {
 			File profileFile = new File( this.filePath );
 			if ( profileFile.exists() ) {
@@ -43,7 +44,9 @@ public class LauncherFile {
 				
 			}
 			
-			Profile.currentProfile = new Profile( null );
+			//add block to remove from profiles list
+			
+			Profile.currentProfile = new Profile( this.name );
 			
 		}
 		

@@ -1,9 +1,9 @@
 # Draconic-Launcher
 The open-source Minecraft modpack launcher!
 
-Currently early on in development, this project is a continuation of my over-done Python script that functioned as a custom Minecraft launcher. I created it so that modding the environment could be easier and more convenient. This program aims to support it's own modpacks, as well as those from other popular launchers. It will then create an manages multiple instances of the game for efficient creation of custom modpacks.
+Currently early on in development, this project is a continuation of my over-done Python script that functioned as a custom Minecraft launcher. I created it so that modding the environment could be easier and more convenient. This program aims to support it's own modpacks, as well as those from other popular launchers. It will then create and manage multiple instances of the game to benefit the creation of custom modpacks.
 
-**TODO:**
+## TODO:
 _(Lots to put here, but let's get the basics down!)_
 - Complete the main program
 	- Login System
@@ -25,6 +25,7 @@ _(Lots to put here, but let's get the basics down!)_
 	- Local modpack creation system (where other features apply; )
 	- GUI-based modpack creator utility
 	- Patch support
+- Feature: In-Launcher modpack config file editor
 - Feature: Profiles
 	- Improvement of default profiles*:
 		- *Player profiles - modpack defaults for who is logged in

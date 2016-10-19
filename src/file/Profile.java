@@ -52,9 +52,10 @@ public class Profile extends LauncherFile {
 		super( SystemInfo.getLauncherDir() + SystemInfo.getSystemFileSeperator() + "profiles", id, true );
 		this.id = id;
 		
-		if ( Settings.settings.lastProfile != id ) {
-			Settings.settings.lastProfile = id;
-			System.out.println( "[Draconic Launcher][Profile][Info] Set last profile to: " + id );
+		//Makes sure new profile (set from something other than the generate method) will be saved to the settings
+		if ( Settings.settings.currentProfile != id ) {
+			Settings.settings.currentProfile = id;
+			System.out.println( "[Draconic Launcher][Profile][Info] Set current profile to: " + id );
 			
 			Settings.settings.write( false );
 			
@@ -62,13 +63,28 @@ public class Profile extends LauncherFile {
 		
 	}
 
-	public static void generate() throws IOException {
-		currentProfile = new Profile( "test" );
+	public static final void generate() throws IOException {
+		currentProfile = new Profile( Settings.settings.currentProfile );
 		
-		String profileString = null;
-		boolean profileComplete = false;
+		if ( currentProfile.id != null ) {
+			verifyFile( currentProfile );
+			
+		}
+		else {
+			return;
+			
+		}
+		
+		//Because an empty file encoded has values, we need a secondary check
+		String profileData = currentProfile.read();
+		
+		
 		
 		//add check for existance/emptiness
+		
+		/*String profileString = null;
+		boolean profileComplete = false;
+		
 		if ( currentProfile.id != null && !currentProfile.isEmpty() ) {
 			System.out.println( "[Draconic Launcher][Profile][Info] Loading profile: " + currentProfile.id + "..." );
 			profileString = Profile.currentProfile.read();
@@ -94,7 +110,7 @@ public class Profile extends LauncherFile {
 				
 			}
 			
-		}
+		}*/
 		
 		/*if ( Settings.settings.stayLoggedIn && profileComplete ) {
 			AuthUtils.post( "refresh", ParseToJson.refreshPayload( new RefreshPayload() ) );
@@ -105,10 +121,16 @@ public class Profile extends LauncherFile {
 	
 	//Returns data saved in the profile file of the current profile
 	//Make sure not to call this if no profile is set (id = null)
-	public String read() throws IOException {		
-		FileInputStream stream = null;
-		byte[] encryptedProfileBytes = null;
-		byte[] profileBytes = null;
+	public String read() throws IOException {	
+		if ( this.id == null ) {
+			System.out.println( "[Draconic Launcher][Profile][Warn] No data for the current profile");
+			return null;
+			
+		}
+		
+		FileInputStream stream = null; 			//Stream reader
+		byte[] encryptedProfileBytes = null; 	//Byte stream from saved profile file
+		byte[] profileData = null;				//Decrypted profile file
 		
 		try {
 			stream = new FileInputStream( this.filePath );
@@ -125,6 +147,7 @@ public class Profile extends LauncherFile {
 		catch ( IOException exception ) {
 			System.out.println( "[Draconic Launcher][Profile][Warn] Failed to read profile file" );
 			//exception.printStackTrace();
+			return null;
 			
 		}
 		finally {
@@ -134,23 +157,23 @@ public class Profile extends LauncherFile {
 				stream.close();
 				
 			}
-			else {
+			/*else {
 				System.out.println( "[Draconic Launcher][Profile][Info] Deleting profile: " + this.id + "..." );
 				this.reset();
 				return null;
 				
-			}
+			}*/
 			
 		}
 		
 		try {
 			cipher.init( Cipher.DECRYPT_MODE, key );
 			
-			profileBytes = cipher.update( encryptedProfileBytes );
+			profileData = cipher.update( encryptedProfileBytes );
 			
 			//System.out.println( new String( profileBytes ) );
 			
-			return new String( profileBytes ).substring( 0, Settings.settings.length );
+			return new String( profileData );
 			
 		}
 		catch ( InvalidKeyException exception ) {
@@ -178,7 +201,6 @@ public class Profile extends LauncherFile {
 			cipher.init( Cipher.ENCRYPT_MODE, key );
 			
 			profileBytes = ParseToJson.profile( this ).getBytes( Charset.forName("UTF-8") );
-			Settings.settings.length = profileBytes.length;
 			encryptedProfileBytes = cipher.doFinal( profileBytes );
 			
 		} 
@@ -242,9 +264,9 @@ public class Profile extends LauncherFile {
 		this.clientToken = response.clientToken;
 		
 		this.name = id;
-		this.filePath = SystemInfo.getLauncherDir() + SystemInfo.getSystemFileSeperator() + "profiles" + SystemInfo.getSystemFileSeperator() + this.name + ".profile";
+		this.filePath = SystemInfo.getLauncherDir() + SystemInfo.getSystemFileSeperator() + "profiles" + SystemInfo.getSystemFileSeperator() + id + ".profile";
 		
-		currentProfile = this;
+		//currentProfile = this;
 		
 	}
 	
