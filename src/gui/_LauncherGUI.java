@@ -219,12 +219,12 @@ public class _LauncherGUI extends JFrame {
 				
 				if ( postResponse.getCode() == 200 ) {
 					AuthResponse response = ParseFromJson.authResponse( postResponse.toString() );
-					Profile.currentProfile.update( response );
+					//Profile.currentProfile.update( response );
 					
 					System.out.println( "[Draconic Launcher][LauncherGUI][Info] Successfully logged in! Welcome, " + response.selectedProfile.name );
 					
 					try {
-						Profile.currentProfile.write();
+						//Profile.currentProfile.write();
 						
 						/*if ( Settings.settings.currentProfileIndex != response.selectedProfile.id ) {
 							System.out.println( "[Draconic Launcher][Profile][Info] Set current profile to: " + response.selectedProfile.id );
@@ -235,7 +235,7 @@ public class _LauncherGUI extends JFrame {
 						}*/
 						
 					} 
-					catch ( IOException exception ) {
+					catch ( Exception exception ) {
 						exception.printStackTrace();
 						
 					}
@@ -404,6 +404,10 @@ public class _LauncherGUI extends JFrame {
 					Settings.settings.gameDirectory = directoryPrompt.getText();
 					
 					gameDirectoryPrompt.dispose();
+					
+				}
+				else {
+					System.out.println( "[Draconic Launcher][LauncherGUI][Warn] Failed to verify directory" );
 					
 				}
 				

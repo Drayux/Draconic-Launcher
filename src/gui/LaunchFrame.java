@@ -1,5 +1,7 @@
 package gui;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -7,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 
 import file.Settings;
 
@@ -54,51 +57,112 @@ public class LaunchFrame extends JFrame implements Runnable, ActionListener, Win
 	/*
 	 * -- Nested Pane Classes --
 	 * Classes are nested in the same configuration as the panes are of the GUI
+	 * TODO: AESTHETICS, AESTHETICS, AESTHETICS!!!
 	 */
 	
-	//Information Pane - Displays info on whatever is selected within the selection pane or functions as a controls pane for selection pane tabs
-	static class infoPane extends JPanel {
-
-		private static final long serialVersionUID = 1L;
-		
-		//size stuff //This will be changed to adapt to sizes of other panes, but is constant for now
-		
-	}
-	
-	//Tabs Pane - Allows selection of menu and controls what will be visible in the info pane
-	static class tabsPane extends JPanel {
+	static class BasePane extends JPanel {
 		
 		private static final long serialVersionUID = 1L;
+		
+		private final Color borderColor = new Color( 0, 0, 0 );
 
-		//Selection Pane - Subpane of the tabs pane, allowing for further selection on relevant tabs (ex. modpack selection)
-		static class selectionPane extends JPanel {
+		private InfoPane infoPane;
+		private TabsPane tabsPane;
+		private UserPane userPane;
+		
+		public BasePane() {
+			//Panes
+			this.infoPane = new InfoPane();
+			
+			this.tabsPane = new TabsPane();
+			//this.tabsPane.setBorder( new LineBorder( borderColor, 5 ) );
+			
+			this.userPane = new UserPane();
+			
+			//Layout Manager (not present here because it needs to be called separately for the frames to resize correctly
+			
+		}
+		
+		public void setLayout( JFrame parent ) {
+			GroupLayout gl = new GroupLayout( this );
+			this.setLayout( gl );
+			
+			gl.setHorizontalGroup( gl.createSequentialGroup()
+				.addGroup( gl.createParallelGroup()
+					.addComponent( tabsPane )
+					.addComponent( infoPane )
+				)
+				.addComponent( userPane )
+			);
+			gl.setVerticalGroup( gl.createParallelGroup()
+				.addGroup( gl.createSequentialGroup()
+					.addComponent( tabsPane )
+					.addComponent( infoPane )
+				)
+				.addComponent( userPane )
+			);
+			
+		}
+		
+		//Information Pane - Displays info on whatever is selected within the selection pane or functions as a controls pane for selection pane tabs
+		static class InfoPane extends JPanel {
 			
 			private static final long serialVersionUID = 1L;
+			
+			public InfoPane() {
+				this.setBackground( new Color( 255, 0, 0 ) );
+				
+			}
+			//size stuff //This will be changed to adapt to sizes of other panes, but is constant for now
+			
+		}
+		
+		//Tabs Pane - Allows selection of menu and controls what will be visible in the info pane
+		static class TabsPane extends JPanel {
+			
+			private static final long serialVersionUID = 1L;
+	
+			public TabsPane() {
+				this.setBackground( new Color( 0, 255, 0 ) );
+				
+			}
+			
+			//Selection Pane - Subpane of the tabs pane, allowing for further selection on relevant tabs (ex. modpack selection)
+			static class SelectionPane extends JPanel {
+				
+				private static final long serialVersionUID = 1L;
+				
+				//do stuff
+				
+			}
 			
 			//do stuff
 			
 		}
 		
-		//do stuff
-		
-	}
-	
-	//User Pane - The section that contains all the user information as well as the login/logout and launch controls
-	static class userPane extends JPanel {
-		
-		private static final long serialVersionUID = 1L;
-
-		//Profile Pane - Extension of the user pane that allows for profile configuration (essentially personal settings / changing your skin within the launcher)
-		static class profilePane extends JPanel {
-
+		//User Pane - The section that contains all the user information as well as the login/logout and launch controls
+		static class UserPane extends JPanel {
+			
 			private static final long serialVersionUID = 1L;
+	
+			public UserPane() {
+				this.setBackground( new Color( 0, 0, 255 ) );
+				
+			}
+			
+			//Profile Pane - Extension of the user pane that allows for profile configuration (essentially personal settings / changing your skin within the launcher)
+			static class ProfilePane extends JPanel {
+	
+				private static final long serialVersionUID = 1L;
+				
+				//do stuff
+				
+			}
 			
 			//do stuff
 			
 		}
-		
-		//do stuff
-		
+	
 	}
 	
 	@Override
@@ -107,12 +171,14 @@ public class LaunchFrame extends JFrame implements Runnable, ActionListener, Win
 		Settings.settings.write( false );
 		
 		//Define panels
-		JPanel infoPane = new infoPane();
+		BasePane basePane = new BasePane();
 		
 		//Set layout manager
+		this.setLayout( new BorderLayout() );
 		
-		//Add panels to frame
-		add( infoPane );
+		//Add Components
+		this.add( basePane, BorderLayout.CENTER );
+		basePane.setLayout( this );
 		
 		this.setVisible( true ); //'Opens' the frame
 		

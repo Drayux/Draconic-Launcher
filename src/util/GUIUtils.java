@@ -6,7 +6,7 @@ import java.io.InputStream;
 import javax.swing.JComponent;
 
 public class GUIUtils {
-
+	
 	public static Font getDefaultFont( JComponent component ) {
 		InputStream stream = null;
 		//byte[] byteStream = null;
@@ -25,10 +25,18 @@ public class GUIUtils {
 			
 		}
 		catch ( Exception exception ) {
+			System.out.println( "[Draconic Launcher][GUIUtils][Warn] Failed to load font files" );
 			exception.printStackTrace();
+			
 			return component.getFont();
 			
 		}
+		
+	}
+	
+	public static void _setFont( JComponent component, int size ) {
+		component.setFont( new Font( "Arial", Font.PLAIN, size ) ); //This functions as a backup if the next line fails
+		component.setFont( getDefaultFont( component ).deriveFont( size ) );
 		
 	}
 	

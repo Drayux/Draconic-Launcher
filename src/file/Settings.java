@@ -15,12 +15,13 @@ public class Settings extends LauncherFile {
 
 	public static transient Settings settings;
 	
+	public transient int currentProfileIndex;
+	public transient String clientToken;
+	
 	//All settings to be contained within the settings file shall be defined here (using non-primitive types)
 	//Anything NOT here WILL BE LOST upon update of the file
 	public String gameDirectory;
-	public String clientToken;
-	//public String currentProfile;
-	public int currentProfileIndex = 0;
+	public String currentProfile; //The ID of the last profile used successfully
 	public Profiles[] profiles = new Profiles[0];
 	//public boolean saveClientToken = false;
 	public boolean stayLoggedIn = false;
@@ -36,6 +37,7 @@ public class Settings extends LauncherFile {
 		public String id;
 		public String username;
 		
+		//This Profiles object is different from the Profile Profile object as these are only the values written to the settings file
 		public Profiles( String id, String username ) {
 			this.id = id;
 			this.username = username;
@@ -47,19 +49,18 @@ public class Settings extends LauncherFile {
 	//Attempts to create settings object from file; Creates a new settings object if not
 	//Updates all missing entries and 'saves' the object to the file
 	public static final void generate() throws IOException {
-		verifyFile( new Settings() );
 		System.out.println( "[Draconic Launcher][Settings][Info] Loading settings from file..." );
 		
-		//think of this line as the "settings loader"
-		settings = ParseFromJson.settings();
+		verifyFile( new Settings() );
 		
-		/*if ( settings.updateDefaultValues( false ) ) {
-			settings.write( false );
-			
-		}*/
-		
-		//Settings will instead be saved on the creation of the main launcher window
+		settings = ParseFromJson.settings(); //think of this line as the "settings loader"
 		settings.updateDefaultValues( false );
+		
+		ClientToken token = new ClientToken();
+		token.generateToken();
+		settings.clientToken = token.token;
+		
+		settings.updateProfileIndex();
 		
 	}
 	
@@ -72,8 +73,8 @@ public class Settings extends LauncherFile {
 		//Game Directory / Last Used Profile / Save Generated Client Token / Stay Logged In:
 		if ( reset ) {
 			this.gameDirectory = null;
-			//this.currentProfile = null;
-			this.currentProfileIndex = 0;
+			this.currentProfile = null;
+			//this.currentProfileIndex = 0;
 			this.profiles = new Profiles[0];
 			//this.saveClientToken = false;
 			this.stayLoggedIn = false;
@@ -89,14 +90,7 @@ public class Settings extends LauncherFile {
 			settingChanged = true;
 			
 		}
-		//Client Token:
-		//if stayLoggedIn != true, reset this to null upon close of main window and invalidate authtoken
-		if ( clientToken == null ) {
-			ClientToken token = new ClientToken();
-			token.generateToken();
-			this.clientToken = token.token;
-			
-		}
+		
 		//Profiles List:
 		//if (  )
 		/* Unnecessary code
@@ -114,6 +108,23 @@ public class Settings extends LauncherFile {
 		}*/
 		
 		return settingChanged;
+		
+	}
+	
+	//This needs to be called whenever the profile is changed
+	public void updateProfileIndex() {
+		if ( settings.currentProfile != null ) {
+			for ( int i = 0; i < settings.profiles.length; i++ ) {
+				if ( settings.profiles[i].id.equals( settings.currentProfile ) ) {
+					System.out.println( "[Draconic Launcher][Settings][Info] Current profile at index: " + i );
+					settings.currentProfileIndex = i;
+					break;
+					
+				}
+				
+			}
+		
+		}
 		
 	}
 	

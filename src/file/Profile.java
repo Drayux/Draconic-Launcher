@@ -27,12 +27,20 @@ public class Profile extends LauncherFile {
 
 	public static transient Profile currentProfile;
 	
+	public String accessToken;
+	public String clientToken; //Client token user logged in with
+	public String id;
+	public String username; 
+	public String displayname; //Make sure to update this at EVERY login
+	//Add setting entries as needed
+	
 	private static transient Cipher cipher;
 	private static transient Key key;
 	
 	static {
 		try {
 			cipher = Cipher.getInstance( "AES" );
+			//TODO: Change this key
 			key = new SecretKeySpec( new byte[]{'s','u','p','e','r','s','e','c','r','e','t','0','0','0','0','0'}, "AES" );
 			
 		} 
@@ -43,12 +51,62 @@ public class Profile extends LauncherFile {
 		
 	}
 	
-	public String accessToken;
-	public String clientToken; //Client token user logged in with
-	public String id;
-	public String username; //Make sure to update this at EVERY login
-	
 	public Profile( String id ) throws IOException {
+		super( SystemInfo.getLauncherDir() + SystemInfo.getSystemFileSeperator() + "profiles", id, true );
+		
+	}
+	
+	//Creates a new profile
+	public void create( String id ) {
+		//^^Might need more params
+		
+		//Create a profile object with the set id
+		//Also create a settings profile object using the same data
+		
+		//create a file of the profile if nonexistant
+		//write to that file the new, full profile object
+		
+		//if all goes well, set that profile as currentProfile
+		//add the profile to the settings (overwrite if id already existent)
+		//set the currentProfile and it's id
+		//save the settings
+		
+	}
+	
+	//Removes a profile from Settings.settings.profiles
+	public void remove( String id ) {
+		
+		
+	}
+	
+	//Loads a known profile
+	public static void generate( int index ) {
+		//get the id of the profile at that index
+		//create a local profile object with that id
+		
+		//read the local profile
+		//update it with the result of the read command
+		
+		//if all was successful, set currentProfile as the new profile we just created
+		//set the current profile and it's corresponding index in settings
+		//save the settings
+		
+		//if not, remove the entry from the list and set the index to 0
+		//do nothing else as the current profile will remain as the last one
+		
+	}
+	
+	public String read() {
+		return null;
+		
+	}
+	
+	public void write() {
+		
+		
+	}
+	
+	/*public Profile( String id ) throws IOException {
 		super( SystemInfo.getLauncherDir() + SystemInfo.getSystemFileSeperator() + "profiles", id, true );
 		this.id = id;
 		
@@ -76,7 +134,7 @@ public class Profile extends LauncherFile {
 		}
 		
 		//Because an empty file encoded has values, we need a secondary check
-		String profileData = currentProfile.read();
+		String profileData = currentProfile.read();*/
 		
 		
 		
@@ -115,13 +173,13 @@ public class Profile extends LauncherFile {
 		/*if ( Settings.settings.stayLoggedIn && profileComplete ) {
 			AuthUtils.post( "refresh", ParseToJson.refreshPayload( new RefreshPayload() ) );
 			
-		}*/
+		}
 		
-	}
+	}*/
 	
 	//Returns data saved in the profile file of the current profile
 	//Make sure not to call this if no profile is set (id = null)
-	public String read() throws IOException {	
+	/*public String read() throws IOException {	
 		if ( this.id == null ) {
 			System.out.println( "[Draconic Launcher][Profile][Warn] No data for the current profile");
 			return null;
@@ -162,11 +220,11 @@ public class Profile extends LauncherFile {
 				this.reset();
 				return null;
 				
-			}*/
+			}
 			
-		}
+		}*/
 		
-		try {
+		/*try {
 			cipher.init( Cipher.DECRYPT_MODE, key );
 			
 			profileData = cipher.update( encryptedProfileBytes );
