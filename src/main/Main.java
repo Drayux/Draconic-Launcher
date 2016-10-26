@@ -32,10 +32,10 @@ public class Main {
 
 		//System.out.println( ParseToJson.authPayload( new AuthPayload( "testusr", new CharSequence[]{"h"} ) ) );
 		
-		//Generates settings object from file
+		//Settings initialization
 		Settings.generate();
-		//Profile initialization
-		//Profile.generate();
+		//Current profile initialization
+		Profile.generate();
 		
 		//Creates launcher GUI based off of the setting in gameDirectory
 		if ( Settings.settings.gameDirectory == null || !LauncherFile.verifyDirectoryPermissions( Settings.settings.gameDirectory ) ) {

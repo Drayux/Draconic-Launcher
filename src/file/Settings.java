@@ -2,6 +2,7 @@ package file;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 
 import json.ParseFromJson;
 import json.ParseToJson;
@@ -21,10 +22,11 @@ public class Settings extends LauncherFile {
 	//All settings to be contained within the settings file shall be defined here (using non-primitive types)
 	//Anything NOT here WILL BE LOST upon update of the file
 	public String gameDirectory;
-	public String currentProfile; //The ID of the last profile used successfully
-	public Profiles[] profiles = new Profiles[0];
+	public String selectedProfile; //The ID of the last profile used successfully
+	//public Profiles[] profiles = new Profiles[0];
+	public List<Profiles> profiles;
 	//public boolean saveClientToken = false;
-	public boolean stayLoggedIn = false;
+	public boolean stayLoggedIn = false; //NOTE: If false, the password will not be saved
 	public float scalingFactor = 1;
 	
 	public Settings() throws IOException {
@@ -35,12 +37,12 @@ public class Settings extends LauncherFile {
 	public static class Profiles {
 		
 		public String id;
-		public String username;
+		public String displayname;
 		
 		//This Profiles object is different from the Profile Profile object as these are only the values written to the settings file
 		public Profiles( String id, String username ) {
 			this.id = id;
-			this.username = username;
+			this.displayname = username;
 			
 		}
 		
@@ -48,6 +50,7 @@ public class Settings extends LauncherFile {
 	
 	//Attempts to create settings object from file; Creates a new settings object if not
 	//Updates all missing entries and 'saves' the object to the file
+	//NOTE: Settings generated here are saved upon the creation of the main window
 	public static final void generate() throws IOException {
 		System.out.println( "[Draconic Launcher][Settings][Info] Loading settings from file..." );
 		
@@ -73,9 +76,9 @@ public class Settings extends LauncherFile {
 		//Game Directory / Last Used Profile / Save Generated Client Token / Stay Logged In:
 		if ( reset ) {
 			this.gameDirectory = null;
-			this.currentProfile = null;
+			this.selectedProfile = null;
 			//this.currentProfileIndex = 0;
-			this.profiles = new Profiles[0];
+			this.profiles.clear();
 			//this.saveClientToken = false;
 			this.stayLoggedIn = false;
 			this.scalingFactor = 1;
@@ -113,18 +116,34 @@ public class Settings extends LauncherFile {
 	
 	//This needs to be called whenever the profile is changed
 	public void updateProfileIndex() {
-		if ( settings.currentProfile != null ) {
-			for ( int i = 0; i < settings.profiles.length; i++ ) {
-				if ( settings.profiles[i].id.equals( settings.currentProfile ) ) {
+		if ( this.selectedProfile != null ) {
+			/*for ( int i = 0; i < this.profiles.length; i++ ) {
+				if ( this.profiles[i].id.equals( this.selectedProfile ) ) {
 					System.out.println( "[Draconic Launcher][Settings][Info] Current profile at index: " + i );
-					settings.currentProfileIndex = i;
-					break;
+					
+					this.currentProfileIndex = i;
+					return;
 					
 				}
+				
+			}*/
+			int i = 0;
+			for ( Profiles profile : profiles ) {
+				if ( profile.id.equals( this.selectedProfile ) ) {
+					System.out.println( "[Draconic Launcher][Settings][Info] Current profile at index: " + i );
+					
+					this.currentProfileIndex = i;
+					return;
+					
+				}
+				
+				i++;
 				
 			}
 		
 		}
+		
+		this.currentProfileIndex = -1;
 		
 	}
 	

@@ -21,14 +21,23 @@ public class ParseFromJson {
 	}
 	
 	public static boolean verifySyntax( String filePath ) throws IOException {
-		FileReader reader = new FileReader( filePath );
+		FileReader reader = null;
 		try {
+			reader = new FileReader( filePath );
+			
 			gsonObject.fromJson( reader, Object.class );
 			return true;
 			
 		}
 		catch ( JsonSyntaxException exception ) {
 			return false;
+			
+		}
+		finally {
+			if ( reader != null ) {
+				reader.close();
+				
+			}
 			
 		}
 		

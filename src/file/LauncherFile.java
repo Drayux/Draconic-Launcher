@@ -37,7 +37,7 @@ public class LauncherFile {
 			
 		}
 		//Note: This will not 'fully' reset the file, only delete it. The profile must also be recreated as a new object
-		else {
+		/*else {
 			File profileFile = new File( this.filePath );
 			if ( profileFile.exists() ) {
 				profileFile.delete();
@@ -46,9 +46,9 @@ public class LauncherFile {
 			
 			//add block to remove from profiles list
 			
-			Profile.currentProfile = new Profile( this.name );
+			_Profile.currentProfile = new _Profile( this.name );
 			
-		}
+		}*/
 		
 	}
 	
@@ -162,7 +162,8 @@ public class LauncherFile {
 				System.exit( 100 );
 				
 			}
-			else {
+			//If an old launcher directory suddenly doesn't have permissions, this is called
+			else if ( !file.isProfile ) {
 				Settings.settings.gameDirectory = null;
 				Settings.settings.write( false );
 				

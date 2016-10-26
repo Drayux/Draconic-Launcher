@@ -4,12 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLHandshakeException;
-
-import java.net.SocketException;
 import java.net.URL;
-import java.net.UnknownHostException;
+import javax.net.ssl.HttpsURLConnection;
 
 /*
  * Utility class for making requests to Mojang servers
@@ -134,7 +130,7 @@ public class AuthUtils {
 			
 			reader = new BufferedReader( responseStream );
 			
-			responseString = reader.readLine();
+			responseString = reader.readLine(); //Response can be read simply like this as it is always one line
 			
 		}
 		catch ( IOException exception ) {

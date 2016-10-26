@@ -1,5 +1,6 @@
 package json;
 
+import file.Profile;
 import file.Settings;
 
 /*
@@ -11,6 +12,6 @@ import file.Settings;
 public class InvalidatePayload {
 
 	private String accessToken; //initialized with user profile access token
-	private String clientToken = Settings.settings.clientToken;
+	private String clientToken = Profile.selectedProfile.clientToken;
 	
 }

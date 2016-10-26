@@ -11,8 +11,8 @@ import file.Settings;
 @SuppressWarnings( "unused" )
 public class RefreshPayload {
 
-	private String accessToken = Profile.currentProfile.accessToken;
-	private String clientToken = Profile.currentProfile.clientToken;
+	private String accessToken = Profile.selectedProfile.accessToken;
+	private String clientToken = Profile.selectedProfile.clientToken;
 	private boolean requestUser;
 	
 	//Makes auth server return an error

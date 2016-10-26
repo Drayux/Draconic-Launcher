@@ -8,7 +8,7 @@ import java.util.Arrays;
 import javax.swing.*;
 
 import file.LauncherFile;
-import file.Profile;
+import file._Profile;
 import file.Settings;
 import json.AuthPayload;
 import json.AuthResponse;
