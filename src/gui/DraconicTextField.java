@@ -19,11 +19,12 @@ public class DraconicTextField extends JTextField {
 	final Color textColor = new Color( 31, 31, 31 );
 	final Color boxColor = new Color( 250, 250, 250 );
 	final Color borderColor = new Color( 250, 250, 250, 0 );
+	//final Color transparentColor = new Color( 0, 0, 0, 0 );
 
 	//String oldText = null;
 	
 	public DraconicTextField() {
-		this.setOpaque( false );
+		this.setOpaque( true );
 		this.setForeground( textColor ); //Text color
 		this.setBackground( boxColor );  //BG color
 		this.putClientProperty( SwingUtilities2.AA_TEXT_PROPERTY_KEY, null );
@@ -44,11 +45,14 @@ public class DraconicTextField extends JTextField {
 		graphics2d.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
 		graphics2d.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON );
 		
+		//System.out.println(this.getBackground().getRed() + this.getBackground().getGreen() + this.getBackground().getBlue());
 		//graphics2d.setColor( ( this.getText().equals( this.oldText ) ) ? this.boxColor : this.getBackground() );
-		graphics2d.setColor( this.getBackground() );
-		graphics2d.fillRoundRect( 0, 0, this.getWidth(), this.getHeight(), arcSize, arcSize );
 		
-		super.paintComponent( graphics2d );
+		graphics.setColor( this.getBackground() );
+		graphics.fillRoundRect( 0, 0, this.getWidth(), this.getHeight(), arcSize, arcSize );
+		
+		//graphics2d.setColor( transparentColor );
+		super.paintComponent( graphics );
 		
 		//this.oldText = this.getText();
 		
