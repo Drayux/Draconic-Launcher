@@ -73,6 +73,11 @@ public class Profile extends LauncherFile {
 				return true;
 				
 			}
+			else {
+				this.accessToken = null;
+				this.clientToken = null;
+				
+			}
 			
 		}
 		

@@ -23,6 +23,7 @@ import json.RefreshPayload;
 import util.AuthUtils;
 import util.SystemInfo;
 
+@SuppressWarnings("unused")
 public class _Profile extends LauncherFile {
 
 	public static transient _Profile currentProfile;

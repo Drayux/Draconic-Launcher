@@ -24,7 +24,7 @@ public class DraconicTextField extends JTextField {
 	//String oldText = null;
 	
 	public DraconicTextField() {
-		this.setOpaque( true );
+		this.setOpaque( false );
 		this.setForeground( textColor ); //Text color
 		this.setBackground( boxColor );  //BG color
 		this.putClientProperty( SwingUtilities2.AA_TEXT_PROPERTY_KEY, null );
@@ -48,11 +48,11 @@ public class DraconicTextField extends JTextField {
 		//System.out.println(this.getBackground().getRed() + this.getBackground().getGreen() + this.getBackground().getBlue());
 		//graphics2d.setColor( ( this.getText().equals( this.oldText ) ) ? this.boxColor : this.getBackground() );
 		
-		graphics.setColor( this.getBackground() );
-		graphics.fillRoundRect( 0, 0, this.getWidth(), this.getHeight(), arcSize, arcSize );
+		graphics2d.setColor( this.getBackground() );
+		graphics2d.fillRoundRect( 0, 0, this.getWidth(), this.getHeight(), arcSize, arcSize );
 		
 		//graphics2d.setColor( transparentColor );
-		super.paintComponent( graphics );
+		super.paintComponent( graphics2d );
 		
 		//this.oldText = this.getText();
 		
